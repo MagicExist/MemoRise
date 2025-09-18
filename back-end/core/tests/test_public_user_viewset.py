@@ -32,6 +32,14 @@ def test_create_user():
 
 @pytest.mark.django_db
 def test_get_user(create_user):
+    """
+    Test that retrieving users from the API works correctly.
+
+    This test ensures that:
+    1. A GET request to the "user-list" endpoint returns a 200 (OK) status.
+    2. The response contains the previously created user (via the fixture).
+    3. The password field is not exposed in any user record, preserving security.
+    """
 
     client = APIClient()
 
