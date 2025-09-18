@@ -1,5 +1,5 @@
 import pytest
-from core.serializer import UserSerializer
+from core.serializer import PublicUserSerializer
 from core.models import User
 from django.test import override_settings
 import tempfile
@@ -25,7 +25,7 @@ def test_user_serializer_create(test_image):
         "password": "supersecret"
     }
 
-    serializer = UserSerializer(data=data)
+    serializer = PublicUserSerializer(data=data)
 
     #If the data is valid pass, if not show serializer errors
     assert serializer.is_valid(), serializer.errors
