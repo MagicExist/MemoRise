@@ -13,7 +13,7 @@ def test_create_user():
     2. The response includes the submitted email, confirming persistence.
     3. The password field is not present in the response, maintaining security.
     """
-    
+
     client = APIClient()
 
     url = reverse("user-list")
@@ -29,3 +29,19 @@ def test_create_user():
     data = response.json()
     assert data["email"] == payload["email"]
     assert "password" not in data #Password should not be exposed
+
+@pytest.mark.django_db
+def test_get_user(create_user):
+
+    client = APIClient()
+
+    url = reverse("user-list")
+
+    response = client.get(url,format="json")
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert any(user["email"] == create_user.email for user in data)
+    for user in data:
+        assert "password" not in user
