@@ -29,3 +29,40 @@ class UserManager(BaseUserManager):
             raise ValueError("Superuser must have is_superuser=True.")
 
         return self.create_user(email, password, **extra_fields)
+
+#Custom UserModel
+class User(AbstractBaseUser,PermissionsMixin):
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=50,unique=True,null=False,blank=False)
+    profile_picture = models.ImageField(
+        upload_to="profiles/",
+        blank=True,
+        null=True
+    )
+
+    base_ease_factor = models.DecimalField(
+        max_digits=3,
+        decimal_places=2,
+        null=False,
+        blank=False,
+        default=Decimal("2.50"),
+        validators=[
+            MinValueValidator(Decimal("1.30")),
+            MaxValueValidator(Decimal("5.00"))
+        ]
+    )
+
+    date_joined = models.DateTimeField(default=timezone.now)
+
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = [
+        "username"
+    ]
+
+    def __str__(self):
+        return self.email
