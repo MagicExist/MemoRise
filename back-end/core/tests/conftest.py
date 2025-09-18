@@ -11,3 +11,13 @@ def test_image():
     image.save(file, "JPEG")
     file.seek(0)
     return SimpleUploadedFile("test.jpg", file.read(), content_type="image/jpeg")
+
+
+@pytest.fixture
+def create_user(db):
+    from core.models import User
+    return User.objects.create_user(
+        email="fixture@mail.com",
+        username="fixture",
+        password="supersecret"
+    )
