@@ -1,6 +1,8 @@
 from rest_framework import viewsets
 from .models import User
-from .serializer import PublicUserSerializer
+from .serializer import PublicUserSerializer,CustomTokenObtainPairSerializer
+
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 # User View Set (Here we will define the api endpoints for our user custom model)
 class PublicUserViewSet(viewsets.ModelViewSet):
@@ -8,3 +10,5 @@ class PublicUserViewSet(viewsets.ModelViewSet):
     serializer_class = PublicUserSerializer
     http_method_names = ['get','post']
     
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
