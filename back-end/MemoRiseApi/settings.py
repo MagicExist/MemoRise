@@ -61,6 +61,10 @@ CORS_ALLOW_ALL_ORIGINS = True #Just for develop
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    
+     "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
 }
 
 SPECTACULAR_SETTINGS = {
