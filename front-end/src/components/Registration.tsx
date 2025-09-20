@@ -134,19 +134,10 @@ const Registration: React.FC = () => {
           Registrarse
         </button>
 
-        {/* Olvidaste contraseña */}
-        <div className="mt-4 text-center">
-          <button
-            type="button"
-            onClick={() => alert("Redirigir a recuperar contraseña")}
-            className="text-sm text-violet-400 hover:text-violet-300"
-          >
-            ¿Olvidaste tu contraseña?
-          </button>
-        </div>
+        
       </form>
     </div>
-  );
+  )
 };
 
 export default Registration;
