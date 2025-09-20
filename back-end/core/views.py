@@ -10,7 +10,11 @@ class PublicUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = PublicUserSerializer
     http_method_names = ['get','post']
-    permission_classes = [IsAuthenticated]
+    
+    def get_permissions(self):
+        if self.action == "create":  # POST
+            return [AllowAny()]
+        return [IsAuthenticated()]
     
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
