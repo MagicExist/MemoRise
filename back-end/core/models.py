@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.utils import timezone
 from decimal import Decimal
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.conf import settings
 
 #Custom UserManager
 class UserManager(BaseUserManager):
@@ -66,3 +67,47 @@ class User(AbstractBaseUser,PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+class Deck(models.Model):
+    # 🎨 Inner class for predefined color choices
+    # Using TextChoices allows us to store the HEX value in the DB
+    class Color(models.TextChoices):
+        RED = "#EF4444", "Red"
+        BLUE = "#3B82F6", "Blue"
+        GREEN = "#10B981", "Green"
+        ORANGE = "#F59E0B", "Orange"
+        PURPLE = "#9333EA", "Purple"
+        ROSE = "#F43F5E", "Rose"
+
+    # 👤 Relationship: one user → many decks
+    # Every deck belongs to a specific user
+    # related_name="decks" lets us query user.decks.all()
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,  # if user is deleted → delete their decks
+        related_name="decks"
+    )
+
+    # 📖 Deck title (required field, max length 100 chars)
+    title = models.CharField(max_length=100, null=False)
+
+    # 📝 Optional description for the deck
+    description = models.TextField(null=True)
+
+    # 🎨 Deck color, limited to predefined choices above
+    # Stored as a HEX value in the DB, defaults to Blue
+    color = models.CharField(
+        max_length=7,
+        choices=Color.choices,
+        default=Color.BLUE
+    )
+
+    # ⏰ Timestamps
+    # created_at → set automatically on creation
+    # updated_at → updated every time the object is saved
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    # 🏷️ String representation (useful for admin & debugging)
+    def __str__(self):
+        return self.title
