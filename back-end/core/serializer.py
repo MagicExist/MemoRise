@@ -14,9 +14,37 @@ class PublicUserSerializer(serializers.ModelSerializer):
             'username': {'required': True},
             'password':{'write_only':True}
             }
+    
+    def validate(self, data):
+        """
+        Validate that the `password` and `confirm_password` fields match.
+
+        This method is automatically called during serializer validation.
+        It ensures that a user cannot register with mismatched passwords.
+        If the two fields are not identical, it raises a ValidationError
+        attached specifically to the `confirm_password` field, returning
+        a clear message to the client about the mismatch.
+
+        Args:
+            data (dict): The validated serializer data containing
+                        'password' and 'confirm_password'.
+
+        Returns:
+            dict: The same data if validation passes (passwords match).
+
+        Raises:
+            serializers.ValidationError: If `password` and `confirm_password`
+                                        do not match.
+        """
+        if data['password'] != data['confirm_password']:
+            raise serializers.ValidationError(
+                {"confirm_password" : "Passwords do not match."}
+            )
+
 
     #We need override to use Django create_user method to hash the password
     def create(self, validated_data):
+        validated_data.pop("confirm_password")
         email = validated_data.pop("email")
         password = validated_data.pop("password")
         user = User.objects.create_user(
