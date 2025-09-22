@@ -22,7 +22,8 @@ def test_user_serializer_create(test_image):
         "email": "test@mail.com",
         "username": "John Doe",
         "profile_picture": test_image,
-        "password": "supersecret"
+        "password": "supersecret",
+        "confirm_password":"supersecret"
     }
 
     serializer = PublicUserSerializer(data=data)
