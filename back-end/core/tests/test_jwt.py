@@ -31,6 +31,7 @@ def test_user_registration():
     userPayload = {
         "email": "user@example.com",
         "password": "test123",
+        "confirm_password": "test123",
         "username": "test123",
     }
 

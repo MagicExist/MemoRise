@@ -20,7 +20,8 @@ def test_create_user():
     payload = {
         "email": "test@mail.com",
         "username": "johhan",
-        "password": "supersecret"
+        "password": "supersecret",
+        "confirm_password": "supersecret",
     }
 
     response = client.post(url,payload,format="json")
@@ -31,7 +32,7 @@ def test_create_user():
     assert "password" not in data #Password should not be exposed
 
 @pytest.mark.django_db
-def test_get_user(create_user):
+def test_get_user(create_user,get_token):
     """
     Test that retrieving users from the API works correctly.
 
@@ -45,6 +46,7 @@ def test_get_user(create_user):
 
     url = reverse("user-list")
 
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {get_token}')
     response = client.get(url,format="json")
 
     assert response.status_code == 200
