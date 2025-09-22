@@ -2,6 +2,8 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import Image
 import io
+from django.urls import reverse
+from rest_framework.test import APIClient
 
 @pytest.fixture
 def test_image():
@@ -38,8 +40,42 @@ def create_user(db):
     """
     
     from core.models import User
-    return User.objects.create_user(
+    raw_password = "supersecret"
+    user = User.objects.create_user(
         email="fixture@mail.com",
         username="fixture",
-        password="supersecret"
+        password=raw_password
     )
+    user.password = raw_password
+    return user
+
+@pytest.fixture
+def get_token(create_user):
+    """
+    Fixture that authenticates the test user and returns a valid JWT access token.
+
+    Workflow:
+    1. Uses the `create_user` fixture to ensure a test user exists in the database.
+    2. Sends a POST request to the `token_obtain_pair` endpoint with the user's credentials.
+    3. Validates that the response status is 200 (successful authentication).
+    4. Extracts and returns the JWT access token from the response JSON.
+
+    Returns:
+        str: A JWT access token string that can be used to authenticate
+             subsequent API requests in tests.
+    """
+
+    client = APIClient()
+
+    tokenUrl = reverse("token_obtain_pair")
+
+    tokenPayload = {
+        "email":create_user.email,
+        "password":create_user.password
+    }
+
+    response = client.post(tokenUrl,tokenPayload,format="json")
+    assert response.status_code == 200, response.content
+    data = response.json()
+    jwt_token = data["access"]
+    return jwt_token
