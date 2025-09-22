@@ -6,9 +6,11 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 #Creating a user serializer
 class PublicUserSerializer(serializers.ModelSerializer):
+    confirm_password = serializers.CharField(write_only=True, required=True)
+
     class Meta:
         model = User
-        fields = ['id', 'email', 'password' ,'username', 'profile_picture', 'base_ease_factor']
+        fields = ['id', 'email', 'password', 'confirm_password' ,'username', 'profile_picture', 'base_ease_factor']
         extra_kwargs = {
             'email': {'required': True},
             'username': {'required': True},
@@ -40,6 +42,7 @@ class PublicUserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"confirm_password" : "Passwords do not match."}
             )
+        return data
 
 
     #We need override to use Django create_user method to hash the password
