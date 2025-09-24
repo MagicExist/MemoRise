@@ -117,7 +117,7 @@ const Registration: React.FC = () => {
         </div>
 
         {/* Confirmar contraseña */}
-        <div className="mb-6">
+        <div className="mb-10">
           <label className="block text-sm font-bold text-zinc-200">
             Confirmar contraseña
           </label>
