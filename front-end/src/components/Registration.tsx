@@ -10,27 +10,107 @@ const Registration: React.FC = () => {
     confirmPassword: "",
   });
 
+  const [errors, setErrors] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Validaciones
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = {
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    };
 
-    const fullEmail = `${formData.emailUser}${formData.emailDomain}`;
-
-    if (formData.password !== formData.confirmPassword) {
-      alert("Las contraseñas no coinciden ❌");
-      return;
+   // Validar usuario: debe tener entre 4 y 25 caracteres y solo contener letras, números, puntos, guiones o guiones bajos.
+    const usernameRegex = /^[a-zA-Z0-9._-]{4,25}$/;
+    if (!usernameRegex.test(formData.username)) {
+      newErrors.username =
+        "Debe tener entre 4 y 25 caracteres. Solo se permiten letras, números, '.', '_' o '-'.";
+      valid = false;
     }
 
-    console.log("Datos enviados:", {
+    // Validar usuario del correo: minúsculas, números y '.' (no al inicio ni al final), longitud 4–76
+    const emailUserRegex = /^[a-z0-9]+(?:\.[a-z0-9]+)*$/;
+    if (
+      !emailUserRegex.test(formData.emailUser) ||
+      formData.emailUser.length < 4 ||
+      formData.emailUser.length > 76
+    ) {
+      newErrors.email =
+        "Correo incorrecto ";
+      valid = false;
+    }
+
+    // Validar correo completo (ejemplo: usuario123@gmail.com)
+    const fullEmail = `${formData.emailUser}${formData.emailDomain}`;
+    const fullEmailRegex = /^[a-z0-9]+(?:\.[a-z0-9]+)*@[a-z]+\.[a-z]{2,}$/;
+    if (!fullEmailRegex.test(fullEmail)) {
+      newErrors.email = "Correo completo inválido.";
+      valid = false;
+    }
+
+    // Validar contraseña: mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      newErrors.password =
+        "Mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo.";
+      valid = false;
+    }
+
+    // Confirmación de contraseña
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Las contraseñas no coinciden.";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
+  // Envío del formulario
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return; // No se envía si hay errores
+    }
+
+    setIsSubmitting(true);
+
+    const fullEmail = `${formData.emailUser}${formData.emailDomain}`;
+    console.log(" Datos enviados:", {
       username: formData.username,
       email: fullEmail,
       password: formData.password,
     });
+
+    // TODO: enviar datos al backend (fetch/axios)
+
+    // Limpiar formulario
+    setFormData({
+      username: "",
+      emailUser: "",
+      emailDomain: "@gmail.com",
+      password: "",
+      confirmPassword: "",
+    });
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -43,13 +123,9 @@ const Registration: React.FC = () => {
         onSubmit={handleSubmit}
         className="bg-zinc-800 shadow-lg rounded-2xl p-8 w-full max-w-md border border-zinc-700 z-10"
       >
-        {/* Contenedor para los títulos */}
+        {/* Títulos */}
         <div className="mb-6">
-          {/* Título principal: MemoRise */}
-          <h1 className="text-5xl font-bold text-white mb-1">
-            MemoRise
-          </h1>
-          {/* Subtítulo:  Por favor, ingrese sus datos. */}
+          <h1 className="text-5xl font-bold text-white mb-1">MemoRise</h1>
           <h2 className="text-sm font-bold text-zinc-200">
             Por favor, ingrese sus datos.
           </h2>
@@ -57,21 +133,21 @@ const Registration: React.FC = () => {
 
         {/* Usuario */}
         <div className="mb-4">
-          <label className="block text-sm font-bold text-zinc-200">
-            Usuario
-          </label>
+          <label className="block text-sm font-bold text-zinc-200">Usuario</label>
           <input
             type="text"
             name="username"
             value={formData.username}
             onChange={handleChange}
             placeholder="Tu nombre de usuario"
-            required
-            className="w-full mt-1 px-3 py-2 border border-zinc-00 rounded-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
+            className="w-full mt-1 px-3 py-2 border border-zinc-700 rounded-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
           />
+          {errors.username && (
+            <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+          )}
         </div>
 
-        {/* Correo electrónico */}
+        {/* Correo */}
         <div className="mb-4">
           <label className="block text-sm font-bold text-zinc-200">
             Correo electrónico
@@ -82,8 +158,7 @@ const Registration: React.FC = () => {
               name="emailUser"
               value={formData.emailUser}
               onChange={handleChange}
-              placeholder="Tu usuario"
-              required
+              placeholder="usuario123"
               className="flex-1 px-3 py-2 border border-zinc-700 rounded-l-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
             />
             <select
@@ -98,6 +173,9 @@ const Registration: React.FC = () => {
               <option value="@yahoo.com">@yahoo.com</option>
             </select>
           </div>
+          {errors.email && (
+            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+          )}
         </div>
 
         {/* Contraseña */}
@@ -111,13 +189,15 @@ const Registration: React.FC = () => {
             value={formData.password}
             onChange={handleChange}
             placeholder="••••••••"
-            required
             className="w-full mt-1 px-3 py-2 border border-zinc-700 rounded-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
           />
+          {errors.password && (
+            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+          )}
         </div>
 
         {/* Confirmar contraseña */}
-        <div className="mb-6">
+        <div className="mb-10">
           <label className="block text-sm font-bold text-zinc-200">
             Confirmar contraseña
           </label>
@@ -127,17 +207,24 @@ const Registration: React.FC = () => {
             value={formData.confirmPassword}
             onChange={handleChange}
             placeholder="••••••••"
-            required
             className="w-full mt-1 px-3 py-2 border border-zinc-700 rounded-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
           />
+          {errors.confirmPassword && (
+            <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+          )}
         </div>
 
         {/* Botón */}
         <button
           type="submit"
-          className="w-full bg-violet-600 text-white py-2 rounded-lg hover:bg-violet-700 transition"
+          disabled={isSubmitting}
+          className={`w-full text-white py-2 rounded-lg transition ${
+            isSubmitting
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-violet-600 hover:bg-violet-700"
+          }`}
         >
-          Registrarse
+          {isSubmitting ? "Registrando..." : "Registrarse"}
         </button>
       </form>
     </div>
