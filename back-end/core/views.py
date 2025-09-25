@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .models import User
-from .serializer import PublicUserSerializer,CustomTokenObtainPairSerializer
+from .models import User,Deck
+from .serializer import PublicUserSerializer,CustomTokenObtainPairSerializer,DeckSerializer
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -18,3 +18,16 @@ class PublicUserViewSet(viewsets.ModelViewSet):
     
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+class DeckViewSet(viewsets.ModelViewSet):
+    queryset = Deck.objects.all()
+    serializer_class = DeckSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Only return decks that belong to the authenticated user
+        return Deck.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        # Automatically set the deck's user to the logged-in user
+        serializer.save(user=self.request.user)
