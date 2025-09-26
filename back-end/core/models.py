@@ -111,3 +111,74 @@ class Deck(models.Model):
     # 🏷️ String representation (useful for admin & debugging)
     def __str__(self):
         return self.title
+
+class Flashcard(models.Model):
+    from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
+from decimal import Decimal
+
+
+class Flashcard(models.Model):
+    """
+    Flashcard model represents a study card inside a deck.
+
+    Each flashcard belongs to a Deck (and indirectly to a User via Deck).
+    It stores the front (question/prompt) and back (answer) text, along with
+    spaced repetition attributes used to schedule reviews.
+
+    Fields:
+    - deck: Foreign key to the Deck this flashcard belongs to.
+    - front: Text for the question/prompt.
+    - back: Text for the answer/solution.
+    - created_at / updated_at: Auto-managed timestamps.
+    - due_date: When the card is next scheduled for review.
+    - last_reviewed: The last time the user studied this card.
+    - interval: Days until the next review.
+    - ease_factor: Growth multiplier for intervals (default 2.50, between 1.30–5.00).
+    - streak: Number of consecutive correct reviews.
+    - lapses: Number of times the card has been forgotten.
+    - status: Current learning stage (new, learning, review, lapsed).
+    """
+    
+    class Status(models.TextChoices):
+        NEW = "new", "New"
+        LEARNING = "learning", "Learning"
+        REVIEW = "review", "Review"
+        LAPSED = "lapsed", "Lapsed"
+
+    deck = models.ForeignKey(
+        "Deck",
+        on_delete=models.CASCADE,
+        related_name="flashcards"
+    )
+
+    front = models.TextField(null=False)   # Question / prompt
+    back = models.TextField(null=False)    # Answer / solution
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    due_date = models.DateTimeField(null=True, blank=True)       # Next review date
+    last_reviewed = models.DateTimeField(null=True, blank=True)  # Last review date
+
+    interval = models.IntegerField(default=0)     # Days until next review
+    ease_factor = models.DecimalField(
+        max_digits=3,
+        decimal_places=2,
+        default=Decimal("2.50"),
+        validators=[
+            MinValueValidator(Decimal("1.30")),
+            MaxValueValidator(Decimal("5.00"))
+        ]
+    )
+    streak = models.IntegerField(default=0)       # Consecutive correct answers
+    lapses = models.IntegerField(default=0)       # Times user forgot the card
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.NEW
+    )
+
+    def __str__(self):
+        return f"{self.front[:30]}..."
