@@ -113,12 +113,6 @@ class Deck(models.Model):
         return self.title
 
 class Flashcard(models.Model):
-    from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
-from decimal import Decimal
-
-
-class Flashcard(models.Model):
     """
     Flashcard model represents a study card inside a deck.
 
