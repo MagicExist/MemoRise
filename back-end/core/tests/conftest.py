@@ -4,6 +4,7 @@ from PIL import Image
 import io
 from django.urls import reverse
 from rest_framework.test import APIClient
+from core.models import Deck
 
 @pytest.fixture
 def test_image():
@@ -79,3 +80,8 @@ def get_token(create_user):
     data = response.json()
     jwt_token = data["access"]
     return jwt_token
+
+@pytest.fixture
+def create_deck(create_user):
+    deck = Deck.objects.create(user=create_user, title="Test Deck", color="#3B82F6")
+    return deck
