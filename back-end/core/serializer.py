@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from .models import User,Deck
+from .models import User,Deck,Flashcard
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.exceptions import PermissionDenied
 
 
 #Creating a user serializer
@@ -81,4 +82,50 @@ class DeckSerializer(serializers.ModelSerializer):
         if(request and hasattr(request,"user")):
             validated_data["user"] = request.user
         
+        return super().create(validated_data)
+    
+class FlashCardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Flashcard
+        fields = [
+            "id",
+            "deck",
+            "front",
+            "back",
+            "status",
+            "due_date",
+            "last_reviewed",
+            "interval",
+            "ease_factor",
+            "streak",
+            "lapses",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "status",
+            "interval",
+            "ease_factor",
+            "streak",
+            "lapses",
+            "last_reviewed",
+            "due_date",
+            "created_at",
+            "updated_at",
+        ]
+    
+    def create(self, validated_data):
+        """
+        Ensure that the flashcard is created inside a deck
+        that belongs to the authenticated user.
+        """
+        request = self.context.get("request")
+        user = request.user
+
+        deck = validated_data["deck"]
+
+        if deck.user != user:
+            raise PermissionDenied("You cannot add flashcards to this deck.")
+
         return super().create(validated_data)
