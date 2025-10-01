@@ -5,11 +5,12 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
-    email: "",
+    emailUser: "",
+    emailDomain: "@gmail.com", // dominio fijo
     password: "",
   });
 
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+  const [errors, setErrors] = useState<{ emailUser?: string; password?: string }>(
     {}
   );
 
@@ -17,17 +18,14 @@ const Login: React.FC = () => {
 
   const validateForm = () => {
     let valid = true;
-    const newErrors: { email?: string; password?: string } = {};
+    const newErrors: { emailUser?: string; password?: string } = {};
 
-    // Validación de email
-    if (!formData.email.trim()) {
-      newErrors.email = "El correo es obligatorio";
+    // Validación del usuario del correo
+    if (!formData.emailUser.trim()) {
+      newErrors.emailUser = "El usuario del correo es obligatorio";
       valid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "El formato de correo no es válido";
-      valid = false;
-    } else if (formData.email.length > 76) {
-      newErrors.email = "El correo no puede superar los 76 caracteres";
+    } else if (formData.emailUser.length > 76) {
+      newErrors.emailUser = "El usuario del correo no puede superar los 76 caracteres";
       valid = false;
     }
 
@@ -62,8 +60,11 @@ const Login: React.FC = () => {
       return;
     }
 
-    console.log("Datos de login:", formData);
-    // TODO: enviar datos al backend
+    // Construir el email completo
+    const fullEmail = `${formData.emailUser}${formData.emailDomain}`;
+
+    console.log("Datos de login:", { email: fullEmail, password: formData.password });
+    // TODO: enviar datos al backend (usar fullEmail)
   };
 
   return (
@@ -89,16 +90,24 @@ const Login: React.FC = () => {
           <label className="block text-sm font-bold text-zinc-200">
             Correo electrónico
           </label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Tu correo electrónico"
-            className="w-full mt-1 px-3 py-2 border border-zinc-700 rounded-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+          <div className="flex mt-1 items-center">
+            {/* Parte del usuario */}
+            <input
+              type="text"
+              name="emailUser"
+              value={formData.emailUser}
+              onChange={handleChange}
+              placeholder="usuario123"
+              maxLength={76}
+              className="flex-1 px-3 py-2 border border-zinc-700 rounded-l-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
+            />
+            {/* Dominio fijo */}
+            <span className="px-3 py-2 border border-l-0 border-zinc-700 rounded-r-lg bg-gray-100 text-zinc-700">
+              @gmail.com
+            </span>
+          </div>
+          {errors.emailUser && (
+            <p className="text-red-500 text-sm mt-1">{errors.emailUser}</p>
           )}
         </div>
 

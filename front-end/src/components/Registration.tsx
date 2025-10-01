@@ -159,36 +159,31 @@ const Registration: React.FC = () => {
         </div>
 
         {/* Correo */}
-        <div className="mb-4">
-          <label className="block text-sm font-bold text-zinc-200">
-            Correo electrónico
-          </label>
-          <div className="flex mt-1">
-            <input
-              type="text"
-              name="emailUser"
-              value={formData.emailUser}
-              onChange={handleChange}
-              placeholder="usuario123"
-              maxLength={76} // 👈 máximo para emailUser
-              className="flex-1 px-3 py-2 border border-zinc-700 rounded-l-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
-            />
-            <select
-              name="emailDomain"
-              value={formData.emailDomain}
-              onChange={handleChange}
-              className="px-2 py-2 border border-zinc-700 rounded-r-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
-            >
-              <option value="@gmail.com">@gmail.com</option>
-              <option value="@hotmail.com">@hotmail.com</option>
-              <option value="@outlook.com">@outlook.com</option>
-              <option value="@yahoo.com">@yahoo.com</option>
-            </select>
-          </div>
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-          )}
-        </div>
+<div className="mb-4">
+  <label className="block text-sm font-bold text-zinc-200">
+    Correo electrónico
+  </label>
+  <div className="flex mt-1 items-center">
+    {/* Parte del usuario */}
+    <input
+      type="text"
+      name="emailUser"
+      value={formData.emailUser}
+      onChange={handleChange}
+      placeholder="usuario123"
+      maxLength={76} // 👈 máximo para emailUser
+      className="flex-1 px-3 py-2 border border-zinc-00 rounded-l-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
+    />
+    {/* Dominio fijo */}
+    <span className="px-3 py-2 border border-l-0 border-zinc-500 rounded-r-lg bg-gray-100 text-zinc-800">
+      @gmail.com
+    </span>
+  </div>
+  {errors.email && (
+    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+  )}
+</div>
+
 
         {/* Contraseña */}
         <div className="mb-4">
