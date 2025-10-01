@@ -1,13 +1,19 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import backgroundImage from "/src/assets/background.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+
+import { loginUser } from "../services/authService";
+import type { UserLogin } from "../types/user";
+
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate()
 
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {}
@@ -55,16 +61,34 @@ const Login: React.FC = () => {
     setErrors({ ...errors, [e.target.name]: "" }); // limpiar error al escribir
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
-    console.log("Datos de login:", formData);
-    // TODO: enviar datos al backend
+    try {
+      const payload: UserLogin = {
+        email: formData.email,
+        password: formData.password,
+      };
+
+      const response = await loginUser(payload);
+
+      // Example: store JWT token if backend returns it
+      if (response.access) {
+        localStorage.setItem("token", response.access);
+        console.log("✅ Login successful, token saved!");
+        navigate("/mainpanel");
+      }
+
+    } catch (error: any) {
+      console.error("❌ Error en login:", error);
+      if (error.response?.data) {
+        console.error("Detalles del error:", error.response.data);
+      }
+    }
   };
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-zinc-900 relative">
