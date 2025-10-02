@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ThreeDotsIcon from "../../assets/Deck/tree-dots-option.svg";
+import { deleteDeck } from "../../services/deckService"
 
 interface OptionsMenuProps {
   deckId: number;
@@ -25,6 +26,21 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete }) => {
     };
   }, []);
 
+  const handleDelete = async () => {
+    try {
+      await deleteDeck(deckId)
+      console.log("✅ Deck deleted successfully");
+
+      if (onDelete) {
+        onDelete(); //notify parent
+      }
+    } catch (error) {
+      console.error("Error deleting deck:", error);
+    } finally {
+      setOpen(false); // close the menu after action
+    }
+  };
+
   return (
     <div className="relative" ref={menuRef}>
       {/* 3 dots button */}
@@ -46,7 +62,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete }) => {
               ✏️ Edit
             </li>
             <li
-              onClick={onDelete}
+              onClick={handleDelete}
               className="px-4 py-2 hover:bg-red-600 cursor-pointer"
             >
               🗑️ Delete
