@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import backgroundImage from "/src/assets/background.png";
 
-import { registerUser } from "../services/authService";
-import type { UserRegistration } from "../types/user";
+import { registerUser } from "../../services/authService";
+import type { UserRegistration } from "../../types/user";
 
 const Registration: React.FC = () => {
   const navigate = useNavigate();

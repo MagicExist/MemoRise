@@ -3,8 +3,8 @@ import { useNavigate,Link } from "react-router-dom";
 import backgroundImage from "/src/assets/background.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-import { loginUser } from "../services/authService";
-import type { UserLogin } from "../types/user";
+import { loginUser } from "../../services/authService";
+import type { UserLogin } from "../../types/user";
 
 
 const Login: React.FC = () => {
