@@ -26,7 +26,7 @@ const DeckCard: React.FC<DeckCardProps> = ({
 
   const handleCardClick = () => {
     if (!clickable) return;
-    navigate(to ?? `/decks/${id}`, {
+    navigate(to ?? `/decks/${id}/study`, {
       state: { color, title }, // 👈 pasamos props al detalle
     });
   };
