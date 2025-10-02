@@ -2,12 +2,12 @@ import DeckCard from './DeckCard';
 
 const MainPanel = () => {
     const decks = [
-        { title: 'English', color: 'blue' },
-        { title: 'Portuguese', color: 'amber' },
-        { title: 'Math', color: 'purple' },
-        { title: 'CyberSecurity', color: 'rose' },
-        { title: 'Chess', color: 'red' },
-        { title: 'Cook Recipes', color: 'teal' }
+        { id: 1, title: "English", color: "blue" },
+        { id: 2, title: "Portuguese", color: "amber" },
+        { id: 3, title: "Math", color: "purple" },
+        { id: 4, title: "CyberSecurity", color: "rose" },
+        { id: 5, title: "Chess", color: "red" },
+        { id: 6, title: "Cook Recipes", color: "teal" }
     ];
 
     return (
@@ -21,6 +21,7 @@ const MainPanel = () => {
                         {decks.map((deck, index) => (
                             <DeckCard 
                             key={index}
+                            id={deck.id}
                             title={deck.title}
                             />
                         ))}
