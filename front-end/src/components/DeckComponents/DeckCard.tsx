@@ -8,8 +8,8 @@ interface DeckCardProps {
   onDelete?: (id: number) => void;
   onEdit?: () => void;
   showOptions?: boolean;
-  clickable?: boolean;          // 👈 new (default true)
-  to?: string;                  // 👈 optional custom path
+  clickable?: boolean;          // 👈 default true
+  to?: string;                  // 👈 custom path opcional
 }
 
 const DeckCard: React.FC<DeckCardProps> = ({
@@ -26,7 +26,9 @@ const DeckCard: React.FC<DeckCardProps> = ({
 
   const handleCardClick = () => {
     if (!clickable) return;
-    navigate(to ?? `/decks/${id}`); // default route
+    navigate(to ?? `/decks/${id}`, {
+      state: { color, title }, // 👈 pasamos props al detalle
+    });
   };
 
   const handleKey = (e: React.KeyboardEvent) => {
@@ -46,22 +48,22 @@ const DeckCard: React.FC<DeckCardProps> = ({
       className="relative group w-65 h-55 rounded-xl shadow-lg overflow-hidden transform transition-transform duration-200 hover:scale-105 cursor-pointer"
       aria-label={`Open deck ${title}`}
     >
-      {/* Base background */}
+      {/* Fondo base */}
       <div className="w-full h-full" style={{ backgroundColor: color }} />
 
-      {/* Gradient overlay */}
+      {/* Gradiente de overlay */}
       <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
 
-      {/* Title */}
+      {/* Título */}
       <div className="absolute bottom-3 left-3">
         <span className="text-white text-2xl font-semibold">{title}</span>
       </div>
 
-      {/* Options Menu (don’t trigger navigation) */}
+      {/* Options Menu (no dispara navegación) */}
       {showOptions && (
         <div
           className="absolute top-3 right-3 hidden group-hover:block"
-          onClick={(e) => e.stopPropagation()} // 👈 important
+          onClick={(e) => e.stopPropagation()} // 👈 evitar navegar al abrir menú
           onKeyDown={(e) => e.stopPropagation()}
         >
           <OptionsMenu

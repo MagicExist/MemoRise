@@ -1,12 +1,19 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getFlashcardsByDeck } from "../../services/flashcardService"; // 👈 create this
-import type { Flashcard } from "../../types/flashcard";
+import { useEffect, useRef, useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import { getFlashcardsByDeck } from "../../services/flashcardService";
+import type { Flashcard as FlashcardType } from "../../types/flashcard";
+import Flashcard from "../../components/FlashCardComponents/Flashcard";
 
 const DeckDetail = () => {
-  const { deckId } = useParams<{ deckId: string }>(); // 👈 get :deckId from URL
-  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
+  const { deckId } = useParams<{ deckId: string }>();
+  const [flashcards, setFlashcards] = useState<FlashcardType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(12); // 👈 initial batch
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  // 👇 color y título pasados desde DeckCard (MainPanel)
+  const location = useLocation();
+  const state = location.state as { color?: string; title?: string };
 
   useEffect(() => {
     const fetchFlashcards = async () => {
@@ -24,28 +31,55 @@ const DeckDetail = () => {
     fetchFlashcards();
   }, [deckId]);
 
+  // IntersectionObserver para infinite scroll
+  useEffect(() => {
+    if (!observerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((prev) => Math.min(prev + 12, flashcards.length));
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(observerRef.current);
+
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current);
+    };
+  }, [flashcards]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-black to-purple-700 text-white p-6">
-      <h2 className="text-4xl font-bold mb-6">Flashcards</h2>
+      <h2 className="text-4xl font-bold mb-6">
+        Flashcards {state?.title ? `of ${state.title}` : ""}
+      </h2>
 
       {loading ? (
         <p>Loading flashcards...</p>
       ) : flashcards.length === 0 ? (
         <p>No flashcards in this deck yet 📭</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {flashcards.map((card) => (
-            <div
-              key={card.id}
-              className="bg-[#1E1E1E]/60 backdrop-blur-lg p-4 rounded-xl shadow-md"
-            >
-              <p className="text-lg font-semibold">Front:</p>
-              <p className="mb-2">{card.front}</p>
-              <p className="text-lg font-semibold">Back:</p>
-              <p>{card.back}</p>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {flashcards.slice(0, visibleCount).map((card,idx) => (
+              <Flashcard
+                key={card.id}
+                card={card}
+                index={idx}
+              />
+            ))}
+          </div>
+
+          {/* Sentinel para el observer */}
+          {visibleCount < flashcards.length && (
+            <div ref={observerRef} className="h-10 flex justify-center items-center">
+              <p className="text-gray-300">Loading more...</p>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
     </div>
   );
