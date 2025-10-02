@@ -6,7 +6,7 @@ type DeckCardProps = {
 
 const DeckCard: React.FC<DeckCardProps> = ({title}) => {
     return (
-        <div className="relative w-50 h-50 rounded-xl shadow-lg overflow-hidden">
+        <div className="relative w-65 h-55 rounded-xl shadow-lg overflow-hidden">
             {/* Base background */}
             <div className="w-full h-full bg-blue-500" />
 
