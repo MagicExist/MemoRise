@@ -6,3 +6,8 @@ export const getDecks = async (): Promise<Deck[]> => {
   const response = await api.get<Deck[]>("/decks/");
   return response.data;
 };
+
+
+export const deleteDeck = async (deckId: number): Promise<void> => {
+  await api.delete(`/decks/${deckId}/`);
+};

@@ -22,6 +22,11 @@ const MainPanel = () => {
     fetchDecks();
   }, []);
 
+  const handleDeleteDeck = (deckId: number) => {
+    setDecks((prev) => prev.filter((deck) => deck.id !== deckId));
+  };
+
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-black from-10% via-black via-40% to-purple-700 to-100%">
       <div className="p-6 flex flex-col items-center">
@@ -33,7 +38,7 @@ const MainPanel = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-20">
               {decks.map((deck) => (
-                <DeckCard key={deck.id} id={deck.id} title={deck.title} color={deck.color}/>
+                <DeckCard key={deck.id} id={deck.id} title={deck.title} color={deck.color} onDelete={()=>handleDeleteDeck(deck.id)}/>
               ))}
             </div>
           )}
