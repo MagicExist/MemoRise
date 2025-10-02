@@ -3,13 +3,14 @@ import OptionsMenu from "./OptionsMenu";
 interface DeckCardProps {
   id:number;
   title: string;
+  color: string;
 }
 
-const DeckCard: React.FC<DeckCardProps> = ({ id,title }) => {
+const DeckCard: React.FC<DeckCardProps> = ({ id,title,color }) => {
   return (
     <div className="relative group w-65 h-55 rounded-xl shadow-lg overflow-hidden transform transition-transform duration-200 hover:scale-105 cursor-pointer">
       {/* Base background */}
-      <div className="w-full h-full bg-blue-500" />
+      <div className={`w-full h-full`} style={{ backgroundColor: color }}/>
 
       {/* Gradient overlay */}
       <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />

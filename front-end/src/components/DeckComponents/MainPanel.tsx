@@ -1,35 +1,46 @@
-import DeckCard from './DeckCard';
+import { useEffect, useState } from "react";
+import DeckCard from "./DeckCard";
+import { getDecks } from "../../services/deckService";
+import type { Deck } from "../../types/deck";
 
 const MainPanel = () => {
-    const decks = [
-        { id: 1, title: "English", color: "blue" },
-        { id: 2, title: "Portuguese", color: "amber" },
-        { id: 3, title: "Math", color: "purple" },
-        { id: 4, title: "CyberSecurity", color: "rose" },
-        { id: 5, title: "Chess", color: "red" },
-        { id: 6, title: "Cook Recipes", color: "teal" }
-    ];
+  const [decks, setDecks] = useState<Deck[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    return (
-        <div className="min-h-screen bg-gradient-to-b from-black from-10% via-black via-40% to-purple-700 to-100%">
-            <div className="p-6 flex flex-col items-center">
-            
-                <div className="w-full max-w-6xl">
-                    <h2 className="text-5xl font-bold text-gray-50 mb-6">Deck Panel</h2>
+  useEffect(() => {
+    const fetchDecks = async () => {
+      try {
+        const data = await getDecks();
+        setDecks(data);
+      } catch (error) {
+        console.error("Error fetching decks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-20">
-                        {decks.map((deck, index) => (
-                            <DeckCard 
-                            key={index}
-                            id={deck.id}
-                            title={deck.title}
-                            />
-                        ))}
-                    </div>
-                </div>
+    fetchDecks();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-black from-10% via-black via-40% to-purple-700 to-100%">
+      <div className="p-6 flex flex-col items-center">
+        <div className="w-full max-w-6xl">
+          <h2 className="text-5xl font-bold text-gray-50 mb-6">Deck Panel</h2>
+
+          {loading ? (
+            <p className="text-gray-200">Loading decks...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-20">
+              {decks.map((deck) => (
+                <DeckCard key={deck.id} id={deck.id} title={deck.title} color={deck.color}/>
+              ))}
             </div>
+          )}
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default MainPanel;
