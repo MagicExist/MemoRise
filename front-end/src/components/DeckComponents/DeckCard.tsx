@@ -5,9 +5,10 @@ interface DeckCardProps {
   title: string;
   color: string;
   onDelete?: () => void; 
+  showOptions?: boolean;
 }
 
-const DeckCard: React.FC<DeckCardProps> = ({ id,title,color,onDelete }) => {
+const DeckCard: React.FC<DeckCardProps> = ({ id,title,color,onDelete,showOptions }) => {
   return (
     <div className="relative group w-65 h-55 rounded-xl shadow-lg overflow-hidden transform transition-transform duration-200 hover:scale-105 cursor-pointer">
       {/* Base background */}
@@ -22,12 +23,11 @@ const DeckCard: React.FC<DeckCardProps> = ({ id,title,color,onDelete }) => {
       </div>
 
       {/* Options Menu (always visible on hover) */}
-      <div className="absolute top-3 right-3 hidden group-hover:block">
-        <OptionsMenu
-          deckId={id}
-          onDelete={onDelete}
-        />
-      </div>
+      {showOptions && (
+        <div className="absolute top-3 right-3 hidden group-hover:block">
+          <OptionsMenu deckId={id} onDelete={onDelete} />
+        </div>
+      )}
     </div>
   );
 };
