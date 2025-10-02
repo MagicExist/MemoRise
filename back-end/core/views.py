@@ -4,6 +4,8 @@ from .serializer import PublicUserSerializer,CustomTokenObtainPairSerializer,Dec
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 # User View Set (Here we will define the api endpoints for our user custom model)
 class PublicUserViewSet(viewsets.ModelViewSet):
@@ -31,6 +33,13 @@ class DeckViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # Automatically set the deck's user to the logged-in user
         serializer.save(user=self.request.user)
+
+    @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
+    def flashcards(self, request, pk=None):
+        deck = self.get_object()  # ensures deck belongs to user
+        flashcards = deck.flashcards.all()  # uses related_name from model
+        serializer = FlashCardSerializer(flashcards, many=True)
+        return Response(serializer.data)
 
 
 class FlashCardViewSet(viewsets.ModelViewSet):
