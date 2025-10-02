@@ -56,7 +56,7 @@ const DeckForm: React.FC<DeckFormProps> = ({ onCreated }) => {
 
       <div className="flex-shrink-0 relative">
         <h2 className="absolute -top-15 text-white text-3xl font-bold">New Deck</h2>        
-        <DeckCard id={0} title={title} color={color} showOptions={false} />
+        <DeckCard id={0} title={title} color={color} showOptions={false} clickable={false} />
       </div>
 
       {/* 👉 Form Fields (right) */}
