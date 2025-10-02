@@ -1,18 +1,26 @@
 import OptionsMenu from "./OptionsMenu";
 
 interface DeckCardProps {
-  id:number;
+  id: number;
   title: string;
   color: string;
-  onDelete?: () => void; 
+  onDelete?: () => void;
+  onEdit?: () => void;
   showOptions?: boolean;
 }
 
-const DeckCard: React.FC<DeckCardProps> = ({ id,title,color,onDelete,showOptions }) => {
+const DeckCard: React.FC<DeckCardProps> = ({
+  id,
+  title,
+  color,
+  onDelete,
+  onEdit,
+  showOptions,
+}) => {
   return (
     <div className="relative group w-65 h-55 rounded-xl shadow-lg overflow-hidden transform transition-transform duration-200 hover:scale-105 cursor-pointer">
       {/* Base background */}
-      <div className={`w-full h-full`} style={{ backgroundColor: color }}/>
+      <div className={`w-full h-full`} style={{ backgroundColor: color }} />
 
       {/* Gradient overlay */}
       <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
@@ -25,7 +33,7 @@ const DeckCard: React.FC<DeckCardProps> = ({ id,title,color,onDelete,showOptions
       {/* Options Menu (always visible on hover) */}
       {showOptions && (
         <div className="absolute top-3 right-3 hidden group-hover:block">
-          <OptionsMenu deckId={id} onDelete={onDelete} />
+          <OptionsMenu deckId={id} onDelete={onDelete} onEdit={onEdit} />
         </div>
       )}
     </div>
