@@ -129,3 +129,6 @@ class FlashCardSerializer(serializers.ModelSerializer):
             raise PermissionDenied("You cannot add flashcards to this deck.")
 
         return super().create(validated_data)
+    
+class FlashcardReviewSerializer(serializers.Serializer):
+    answer = serializers.ChoiceField(choices=["again", "good", "easy"])
