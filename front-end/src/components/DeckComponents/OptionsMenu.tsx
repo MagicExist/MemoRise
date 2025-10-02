@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ThreeDotsIcon from "../../assets/Deck/tree-dots-option.svg";
-import { deleteDeck } from "../../services/deckService"
+import { deleteDeck } from "../../services/deckService";
 
 interface OptionsMenuProps {
   deckId: number;
   onDelete?: () => void;
+  onEdit?: () => void;
 }
 
-const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete }) => {
+const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete, onEdit }) => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete }) => {
 
   const handleDelete = async () => {
     try {
-      await deleteDeck(deckId)
+      await deleteDeck(deckId);
       console.log("✅ Deck deleted successfully");
 
       if (onDelete) {
@@ -39,6 +40,13 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete }) => {
     } finally {
       setOpen(false); // close the menu after action
     }
+  };
+
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit(); // notify parent
+    }
+    setOpen(false);
   };
 
   return (
@@ -56,7 +64,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete }) => {
         <div className="absolute right-0 mt-2 w-32 bg-[#1F1F2E] rounded-md shadow-lg ring-1 ring-black/10 z-10">
           <ul className="py-1 text-sm text-gray-200">
             <li
-              onClick={() => navigate(`/decks/${deckId}/edit`)}
+              onClick={handleEdit}
               className="px-4 py-2 hover:bg-purple-600 cursor-pointer"
             >
               ✏️ Edit

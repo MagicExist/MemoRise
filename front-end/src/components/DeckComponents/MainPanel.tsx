@@ -4,14 +4,15 @@ import { getDecks } from "../../services/deckService";
 import type { Deck } from "../../types/deck";
 import ActionBar from "../ActionBarComponents/ActionBar";
 import DeckForm from "./DeckForm";
+import DeckEdit from "./DeckEdit";
 import { FaTimes } from "react-icons/fa";
-import { FaT } from "react-icons/fa6";
-
 
 const MainPanel = () => {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false); // 👈 control modal
+  const [showEdit, setShowEdit] = useState(false);
+  const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
 
   useEffect(() => {
     const fetchDecks = async () => {
@@ -37,6 +38,13 @@ const MainPanel = () => {
     setShowForm(false); // close after creating
   };
 
+  const handleUpdateDeck = (updatedDeck: Deck) => {
+    setDecks((prev) =>
+      prev.map((deck) => (deck.id === updatedDeck.id ? updatedDeck : deck))
+    );
+    setShowEdit(false); // close modal after update
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-black from-10% via-black via-40% to-purple-700 to-100% relative">
       <div className="p-6 flex flex-col items-center">
@@ -54,6 +62,10 @@ const MainPanel = () => {
                   title={deck.title}
                   color={deck.color}
                   onDelete={() => handleDeleteDeck(deck.id)}
+                  onEdit={() => {
+                    setSelectedDeck(deck); // set the clicked deck
+                    setShowEdit(true); // open modal
+                  }}
                   showOptions={true}
                 />
               ))}
@@ -65,6 +77,20 @@ const MainPanel = () => {
       {/* Action Bar with click handler */}
       <ActionBar onCreateDeck={() => setShowForm(true)} />
 
+      {showEdit && selectedDeck && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
+          <div className="relative bg-[#1E1E1E]/25 backdrop-blur-lg border border-white/10 p-6 rounded-xl shadow-xl w-250 h-125">
+            <DeckEdit deck={selectedDeck} onUpdated={handleUpdateDeck} />
+            <button
+              onClick={() => setShowEdit(false)}
+              className="absolute top-3 right-3 p-2 rounded-full text-gray-300 hover:text-purple-500 hover:bg-purple-500/20 cursor-pointer transition transform hover:scale-110"
+            >
+              ✖
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Modal for DeckForm */}
       {showForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
@@ -74,7 +100,7 @@ const MainPanel = () => {
               onClick={() => setShowForm(false)}
               className="absolute top-3 right-3 p-2 rounded-full text-gray-300 hover:text-purple-500 hover:bg-purple-500/20 cursor-pointer transition transform hover:scale-110"
             >
-              <FaTimes size={18}/>
+              <FaTimes size={18} />
             </button>
           </div>
         </div>

@@ -15,3 +15,8 @@ export const createDeck = async (payload: { title: string; color: string }): Pro
 export const deleteDeck = async (deckId: number): Promise<void> => {
   await api.delete(`/decks/${deckId}/`);
 };
+
+export const updateDeck = async (id: number, payload: { title: string; color: string }): Promise<Deck> => {
+  const response = await api.put<Deck>(`/decks/${id}/`, payload);
+  return response.data;
+};
