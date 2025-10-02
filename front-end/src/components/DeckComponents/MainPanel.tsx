@@ -1,6 +1,6 @@
 import DeckCard from './DeckCard';
 
-const DeckPanel = () => {
+const MainPanel = () => {
 const decks = [
     { title: 'English', color: 'blue' },
     { title: 'Portuguese', color: 'amber' },
@@ -20,7 +20,6 @@ return (
         <DeckCard 
             key={index}
             title={deck.title}
-            color={deck.color}
         />
         ))}
     </div>
@@ -29,4 +28,4 @@ return (
 );
 };
 
-export default DeckPanel;
+export default MainPanel;
