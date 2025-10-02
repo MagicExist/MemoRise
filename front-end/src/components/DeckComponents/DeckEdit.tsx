@@ -50,7 +50,7 @@ const DeckEdit: React.FC<DeckEditProps> = ({ deck, onUpdated }) => {
       {/* Left: Preview */}
       <div className="flex-shrink-0 relative">
         <h2 className="absolute -top-15 text-white text-3xl font-bold">Edit Deck</h2>        
-        <DeckCard id={deck.id} title={title} color={color} showOptions={false} />
+        <DeckCard id={deck.id} title={title} color={color} showOptions={false} clickable={false} />
       </div>
 
       {/* Right: Edit Form */}

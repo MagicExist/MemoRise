@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./components/AuthComponents/Login";
 import Registration from "./components/AuthComponents/Registration";
 import MainPanel from "./components/DeckComponents/MainPanel"
-import DeckEdit from "./components/DeckComponents/DeckEdit";
+import DeckDetail from "./components/DeckComponents/DeckDetail";
 
 function App() {
   return (
@@ -17,8 +17,7 @@ function App() {
         {/* Panel with all decks */}
         <Route path="/mainpanel" element={<MainPanel/>} />
 
-        {/* Edit single deck */}
-        <Route path="/decks/:deckId/edit" element={<DeckEdit/>} />
+        <Route path="/decks/:deckId" element={<DeckDetail/>} />
       </Routes>
     </Router>
   );
