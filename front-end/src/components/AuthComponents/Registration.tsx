@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import backgroundImage from "/src/assets/background.png";
 
+import { registerUser } from "../../services/authService";
+import type { UserRegistration } from "../../types/user";
+
 const Registration: React.FC = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    username: "",
-    emailUser: "",
-    emailDomain: "@gmail.com",
+    email: "",
     password: "",
-    confirmPassword: "",
+    confirm_password: "",
+    username: "",
+    emailDomain: "@gmail.com",
   });
 
   const [errors, setErrors] = useState({
@@ -49,16 +52,16 @@ const Registration: React.FC = () => {
     // Parte usuario del correo
     const emailUserRegex = /^[a-z0-9]+(?:\.[a-z0-9]+)*$/;
     if (
-      !emailUserRegex.test(formData.emailUser) ||
-      formData.emailUser.length < 4 ||
-      formData.emailUser.length > 76
+      !emailUserRegex.test(formData.email) ||
+      formData.email.length < 4 ||
+      formData.email.length > 76
     ) {
       newErrors.email = "Correo incorrecto.";
       valid = false;
     }
 
     // Correo completo
-    const fullEmail = `${formData.emailUser}${formData.emailDomain}`;
+    const fullEmail = `${formData.email}${formData.emailDomain}`;
     const fullEmailRegex = /^[a-z0-9]+(?:\.[a-z0-9]+)*@[a-z]+\.[a-z]{2,}$/;
     if (!fullEmailRegex.test(fullEmail)) {
       newErrors.email = "Correo completo inválido.";
@@ -79,10 +82,10 @@ const Registration: React.FC = () => {
     }
 
     // Confirmar contraseña
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirm_password) {
       newErrors.confirmPassword = "Las contraseñas no coinciden.";
       valid = false;
-    } else if (formData.confirmPassword.length > 20) {
+    } else if (formData.confirm_password.length > 20) {
       newErrors.confirmPassword =
         "La confirmación no debe superar los 20 caracteres.";
       valid = false;
@@ -100,27 +103,39 @@ const Registration: React.FC = () => {
 
     setIsSubmitting(true);
 
-    console.log("Datos enviados:", {
-      username: formData.username,
-      email: `${formData.emailUser}${formData.emailDomain}`,
-      password: formData.password,
-    });
+    try {
+      // Build payload with our type
+      const payload: UserRegistration = {
+        username: formData.username,
+        email: `${formData.email}${formData.emailDomain}`, // join before sending
+        password: formData.password,
+        confirm_password: formData.confirm_password,
+      };
 
-    // TODO: enviar datos al backend (fetch/axios)
+      console.log("📤 Enviando datos:", payload);
 
-    // Limpiar formulario
-    setFormData({
-      username: "",
-      emailUser: "",
-      emailDomain: "@gmail.com",
-      password: "",
-      confirmPassword: "",
-    });
+      const response = await registerUser(payload);
+      console.log("✅ Usuario registrado:", response);
 
-    setIsSubmitting(false);
+      // Reset form
+      setFormData({
+        email: "",
+        username: "",
+        emailDomain: "@gmail.com",
+        password: "",
+        confirm_password: "",
+      });
 
-    // 👉 Redirigir al login
-    navigate("/");
+      navigate("/");
+
+    } catch (error: any) {
+      console.error("❌ Error en registro:", error);
+      if (error.response?.data) {
+        console.error("Detalles del error:", error.response.data);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -168,7 +183,7 @@ const Registration: React.FC = () => {
     <input
       type="text"
       name="emailUser"
-      value={formData.emailUser}
+      value={formData.email}
       onChange={handleChange}
       placeholder="usuario123"
       maxLength={76} // 👈 máximo para emailUser
@@ -211,8 +226,8 @@ const Registration: React.FC = () => {
           </label>
           <input
             type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
+            name="confirm_password"
+            value={formData.confirm_password}
             onChange={handleChange}
             placeholder="••••••••"
             maxLength={20} // 👈 máximo de 20 caracteres

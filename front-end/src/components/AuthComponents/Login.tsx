@@ -1,16 +1,22 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import backgroundImage from "/src/assets/background.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
+import { loginUser } from "../../services/authService";
+import type { UserLogin } from "../../types/user";
+
+
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
-    emailUser: "",
+    email: "",
     emailDomain: "@gmail.com", // dominio fijo
     password: "",
   });
 
-  const [errors, setErrors] = useState<{ emailUser?: string; password?: string }>(
+  const navigate = useNavigate()
+
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {}
   );
 
@@ -18,14 +24,14 @@ const Login: React.FC = () => {
 
   const validateForm = () => {
     let valid = true;
-    const newErrors: { emailUser?: string; password?: string } = {};
+    const newErrors: { email?: string; password?: string } = {};
 
     // Validación del usuario del correo
-    if (!formData.emailUser.trim()) {
-      newErrors.emailUser = "El usuario del correo es obligatorio";
+    if (!formData.email.trim()) {
+      newErrors.email = "El usuario del correo es obligatorio";
       valid = false;
-    } else if (formData.emailUser.length > 76) {
-      newErrors.emailUser = "El usuario del correo no puede superar los 76 caracteres";
+    } else if (formData.email.length > 76) {
+      newErrors.email = "El usuario del correo no puede superar los 76 caracteres";
       valid = false;
     }
 
@@ -53,19 +59,34 @@ const Login: React.FC = () => {
     setErrors({ ...errors, [e.target.name]: "" }); // limpiar error al escribir
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
+    if (!validateForm()) return;
+
+    try {
+      const payload: UserLogin = {
+        email: formData.email,
+        password: formData.password,
+      };
+
+      const response = await loginUser(payload);
+
+      // Example: store JWT token if backend returns it
+      if (response.access) {
+        localStorage.setItem("token", response.access);
+        console.log("✅ Login successful, token saved!");
+        navigate("/mainpanel");
+      }
+
+    } catch (error: any) {
+      console.error("❌ Error en login:", error);
+      if (error.response?.data) {
+        console.error("Detalles del error:", error.response.data);
+      }
     }
-
-    // Construir el email completo
-    const fullEmail = `${formData.emailUser}${formData.emailDomain}`;
-
-    console.log("Datos de login:", { email: fullEmail, password: formData.password });
-    // TODO: enviar datos al backend (usar fullEmail)
   };
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-zinc-900 relative">
@@ -94,8 +115,8 @@ const Login: React.FC = () => {
             {/* Parte del usuario */}
             <input
               type="text"
-              name="emailUser"
-              value={formData.emailUser}
+              name="email"
+              value={formData.email}
               onChange={handleChange}
               placeholder="usuario123"
               maxLength={76}
@@ -106,8 +127,8 @@ const Login: React.FC = () => {
               @gmail.com
             </span>
           </div>
-          {errors.emailUser && (
-            <p className="text-red-500 text-sm mt-1">{errors.emailUser}</p>
+          {errors.email && (
+            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
           )}
         </div>
 
