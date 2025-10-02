@@ -5,6 +5,11 @@ import Login from "./components/Login";
 import Registration from "./components/Registration";
 
 function App() {
-  return <Login />;
+  return (
+    <>
+      <Navbar />
+      <DeckPanel />
+    </>
+  );
 }
 export default App;

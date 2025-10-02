@@ -18,10 +18,10 @@ const Navbar = () => {
             Decks
         </button>
         <button className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition duration-200 font-medium">
-            Study
+            Browse
         </button>
         <button className="px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition duration-200 font-medium">
-            Stats
+            Study
         </button>
         </div>
 
