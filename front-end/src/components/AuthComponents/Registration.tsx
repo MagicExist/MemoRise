@@ -182,7 +182,7 @@ const Registration: React.FC = () => {
     {/* Parte del usuario */}
     <input
       type="text"
-      name="emailUser"
+      name="email"
       value={formData.email}
       onChange={handleChange}
       placeholder="usuario123"

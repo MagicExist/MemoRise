@@ -65,8 +65,9 @@ const Login: React.FC = () => {
     if (!validateForm()) return;
 
     try {
+      const fullEmail = `${formData.email}${formData.emailDomain}`;
       const payload: UserLogin = {
-        email: formData.email,
+        email: fullEmail,
         password: formData.password,
       };
 
