@@ -12,3 +12,8 @@ export const createFlashcard = async (payload: FlashcardCreate): Promise<Flashca
   const response = await api.post<Flashcard>("/flashcards/", payload);
   return response.data;
 };
+
+export const updateFlashcard = async (id: number, data: Partial<Flashcard>): Promise<Flashcard> => {
+  const response = await api.put<Flashcard>(`/flashcards/${id}/`, data);
+  return response.data;
+};

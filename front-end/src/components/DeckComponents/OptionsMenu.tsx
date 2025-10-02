@@ -33,7 +33,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete, onEdit }) =
       console.log("✅ Deck deleted successfully");
 
       if (onDelete) {
-        onDelete(); //notify parent
+        onDelete(); // notify parent
       }
     } catch (error) {
       console.error("Error deleting deck:", error);
@@ -49,6 +49,11 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete, onEdit }) =
     setOpen(false);
   };
 
+  const handleDetails = () => {
+    navigate(`/decks/${deckId}`);
+    setOpen(false);
+  };
+
   return (
     <div className="relative" ref={menuRef}>
       {/* 3 dots button */}
@@ -61,8 +66,14 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete, onEdit }) =
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 mt-2 w-32 bg-[#1F1F2E] rounded-md shadow-lg ring-1 ring-black/10 z-10">
+        <div className="absolute right-0 mt-2 w-36 bg-[#1F1F2E] rounded-md shadow-lg ring-1 ring-black/10 z-10">
           <ul className="py-1 text-sm text-gray-200">
+            <li
+              onClick={handleDetails}
+              className="px-4 py-2 hover:bg-blue-600 cursor-pointer"
+            >
+              📂 Details
+            </li>
             <li
               onClick={handleEdit}
               className="px-4 py-2 hover:bg-purple-600 cursor-pointer"
