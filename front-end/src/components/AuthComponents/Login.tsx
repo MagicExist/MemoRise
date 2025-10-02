@@ -10,6 +10,7 @@ import type { UserLogin } from "../../types/user";
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
     email: "",
+    emailDomain: "@gmail.com", // dominio fijo
     password: "",
   });
 
@@ -25,15 +26,12 @@ const Login: React.FC = () => {
     let valid = true;
     const newErrors: { email?: string; password?: string } = {};
 
-    // Validación de email
+    // Validación del usuario del correo
     if (!formData.email.trim()) {
-      newErrors.email = "El correo es obligatorio";
-      valid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "El formato de correo no es válido";
+      newErrors.email = "El usuario del correo es obligatorio";
       valid = false;
     } else if (formData.email.length > 76) {
-      newErrors.email = "El correo no puede superar los 76 caracteres";
+      newErrors.email = "El usuario del correo no puede superar los 76 caracteres";
       valid = false;
     }
 
@@ -67,8 +65,9 @@ const Login: React.FC = () => {
     if (!validateForm()) return;
 
     try {
+      const fullEmail = `${formData.email}${formData.emailDomain}`;
       const payload: UserLogin = {
-        email: formData.email,
+        email: fullEmail,
         password: formData.password,
       };
 
@@ -113,14 +112,22 @@ const Login: React.FC = () => {
           <label className="block text-sm font-bold text-zinc-200">
             Correo electrónico
           </label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Tu correo electrónico"
-            className="w-full mt-1 px-3 py-2 border border-zinc-700 rounded-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
-          />
+          <div className="flex mt-1 items-center">
+            {/* Parte del usuario */}
+            <input
+              type="text"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="usuario123"
+              maxLength={76}
+              className="flex-1 px-3 py-2 border border-zinc-700 rounded-l-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
+            />
+            {/* Dominio fijo */}
+            <span className="px-3 py-2 border border-l-0 border-zinc-700 rounded-r-lg bg-gray-100 text-zinc-700">
+              @gmail.com
+            </span>
+          </div>
           {errors.email && (
             <p className="text-red-500 text-sm mt-1">{errors.email}</p>
           )}
