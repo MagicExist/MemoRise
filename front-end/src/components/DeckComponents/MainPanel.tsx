@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import DeckCard from "./DeckCard";
 import { getDecks } from "../../services/deckService";
 import type { Deck } from "../../types/deck";
@@ -7,11 +7,12 @@ import DeckForm from "./DeckForm";
 import DeckEdit from "./DeckEdit";
 import { FaTimes } from "react-icons/fa";
 import CreateFlashCard from "../FlashCardComponents/CreateFlashCard";
+import Navbar from "../Navbar/Navbar"; // 👈 importa tu navbar
 
 const MainPanel = () => {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false); // 👈 control modal
+  const [showForm, setShowForm] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
   const [showFlashForm, setShowFlashForm] = useState(false);
@@ -37,18 +38,21 @@ const MainPanel = () => {
 
   const handleAddDeck = (newDeck: Deck) => {
     setDecks((prev) => [...prev, newDeck]);
-    setShowForm(false); // close after creating
+    setShowForm(false);
   };
 
   const handleUpdateDeck = (updatedDeck: Deck) => {
     setDecks((prev) =>
       prev.map((deck) => (deck.id === updatedDeck.id ? updatedDeck : deck))
     );
-    setShowEdit(false); // close modal after update
+    setShowEdit(false);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black from-10% via-black via-40% to-purple-700 to-100% relative">
+    <div className="min-h-screen bg-gradient-to-b from-black via-black to-purple-700 text-white">
+      {/* 👇 Navbar arriba */}
+      <Navbar />
+
       <div className="p-6 flex flex-col items-center">
         <div className="w-full max-w-6xl">
           <h2 className="text-5xl font-bold text-gray-50 mb-6">Deck Panel</h2>
@@ -65,8 +69,8 @@ const MainPanel = () => {
                   color={deck.color}
                   onDelete={() => handleDeleteDeck(deck.id)}
                   onEdit={() => {
-                    setSelectedDeck(deck); // set the clicked deck
-                    setShowEdit(true); // open modal
+                    setSelectedDeck(deck);
+                    setShowEdit(true);
                   }}
                   showOptions={true}
                 />
@@ -76,12 +80,13 @@ const MainPanel = () => {
         </div>
       </div>
 
-      {/* Action Bar with click handler */}
+      {/* ActionBar */}
       <ActionBar
         onCreateDeck={() => setShowForm(true)}
         onCreateFlashcard={() => setShowFlashForm(true)}
       />
 
+      {/* CreateFlashCard modal */}
       {showFlashForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
           <div className="relative flex justify-center bg-[#1E1E1E]/25 backdrop-blur-lg border border-white/10 p-7 rounded-xl shadow-xl w-220 h-125">
@@ -96,6 +101,7 @@ const MainPanel = () => {
         </div>
       )}
 
+      {/* Edit deck modal */}
       {showEdit && selectedDeck && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
           <div className="relative bg-[#1E1E1E]/25 backdrop-blur-lg border border-white/10 p-6 rounded-xl shadow-xl w-250 h-125">
@@ -110,7 +116,7 @@ const MainPanel = () => {
         </div>
       )}
 
-      {/* Modal for DeckForm */}
+      {/* Create deck modal */}
       {showForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
           <div className="relative bg-[#1E1E1E]/25 backdrop-blur-lg border border-white/10 p-6 rounded-xl shadow-xl w-250 h-125">
