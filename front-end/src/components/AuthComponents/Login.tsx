@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate,Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import backgroundImage from "/src/assets/background.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import { loginUser } from "../../services/authService";
 import type { UserLogin } from "../../types/user";
-
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -14,7 +13,7 @@ const Login: React.FC = () => {
     password: "",
   });
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {}
@@ -31,7 +30,8 @@ const Login: React.FC = () => {
       newErrors.email = "El usuario del correo es obligatorio";
       valid = false;
     } else if (formData.email.length > 76) {
-      newErrors.email = "El usuario del correo no puede superar los 76 caracteres";
+      newErrors.email =
+        "El usuario del correo no puede superar los 76 caracteres";
       valid = false;
     }
 
@@ -43,7 +43,8 @@ const Login: React.FC = () => {
       newErrors.password = "La contraseña debe tener al menos 6 caracteres";
       valid = false;
     } else if (formData.password.length > 25) {
-      newErrors.password = "La contraseña no puede superar los 25 caracteres";
+      newErrors.password =
+        "La contraseña no puede superar los 25 caracteres";
       valid = false;
     } else if (/\s/.test(formData.password)) {
       newErrors.password = "La contraseña no puede contener espacios";
@@ -71,15 +72,9 @@ const Login: React.FC = () => {
         password: formData.password,
       };
 
-      const response = await loginUser(payload);
-
-      // Example: store JWT token if backend returns it
-      if (response.access) {
-        localStorage.setItem("token", response.access);
-        console.log("✅ Login successful, token saved!");
-        navigate("/mainpanel");
-      }
-
+      await loginUser(payload); // ✅ tokens se guardan en tokenStorage
+      console.log("✅ Login successful!");
+      navigate("/mainpanel");
     } catch (error: any) {
       console.error("❌ Error en login:", error);
       if (error.response?.data) {
@@ -87,7 +82,6 @@ const Login: React.FC = () => {
       }
     }
   };
-
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-zinc-900 relative">
