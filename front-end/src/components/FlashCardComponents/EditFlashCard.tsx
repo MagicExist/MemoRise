@@ -4,8 +4,8 @@ import { updateFlashcard, deleteFlashcard } from "../../services/flashcardServic
 
 interface EditFlashCardProps {
   flashcard: Flashcard;
-  onUpdated?: () => void;
-  onDeleted?: () => void; // 👈 new callback
+  onUpdated?: () => void;   // callback when a flashcard is updated
+  onDeleted?: () => void;   // callback when a flashcard is deleted
 }
 
 const EditFlashCard: React.FC<EditFlashCardProps> = ({ flashcard, onUpdated, onDeleted }) => {
@@ -14,9 +14,10 @@ const EditFlashCard: React.FC<EditFlashCardProps> = ({ flashcard, onUpdated, onD
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Handle flashcard update
   const handleSubmit = async () => {
     if (!front.trim() || !back.trim()) {
-      setError("⚠️ Please fill out all fields.");
+      setError("Please fill out all fields.");
       return;
     }
 
@@ -27,26 +28,25 @@ const EditFlashCard: React.FC<EditFlashCardProps> = ({ flashcard, onUpdated, onD
       await updateFlashcard(flashcard.id, {
         front,
         back,
-        deck: flashcard.deck, // keep same deck
+        deck: flashcard.deck, // keep the same deck
       });
 
       if (onUpdated) onUpdated();
-    } catch (err) {
-      console.error("❌ Error updating flashcard:", err);
+    } catch {
       setError("Failed to update flashcard. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  // Handle flashcard deletion
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this flashcard?")) return;
     try {
       setLoading(true);
       await deleteFlashcard(flashcard.id);
       if (onDeleted) onDeleted();
-    } catch (err) {
-      console.error("❌ Error deleting flashcard:", err);
+    } catch {
       setError("Failed to delete flashcard. Try again.");
     } finally {
       setLoading(false);
@@ -63,7 +63,7 @@ const EditFlashCard: React.FC<EditFlashCardProps> = ({ flashcard, onUpdated, onD
     >
       <h2 className="text-2xl font-semibold mb-6">Edit Card</h2>
 
-      {/* Front */}
+      {/* Front side input */}
       <label className="block mb-2 text-sm font-medium">Front</label>
       <textarea
         value={front}
@@ -73,7 +73,7 @@ const EditFlashCard: React.FC<EditFlashCardProps> = ({ flashcard, onUpdated, onD
         placeholder="Front"
       />
 
-      {/* Back */}
+      {/* Back side input */}
       <label className="block mb-2 text-sm font-medium">Back</label>
       <textarea
         value={back}
@@ -83,10 +83,10 @@ const EditFlashCard: React.FC<EditFlashCardProps> = ({ flashcard, onUpdated, onD
         placeholder="Back"
       />
 
-      {/* Error */}
+      {/* Error message */}
       {error && <p className="text-red-400 text-sm">{error}</p>}
 
-      {/* Buttons */}
+      {/* Action buttons */}
       <div className="flex justify-between mt-6">
         <button
           type="button"
