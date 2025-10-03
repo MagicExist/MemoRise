@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import type { Flashcard } from "../../types/flashcard";
-import { updateFlashcard } from "../../services/flashcardService";
+import { updateFlashcard, deleteFlashcard } from "../../services/flashcardService";
 
 interface EditFlashCardProps {
   flashcard: Flashcard;
   onUpdated?: () => void;
+  onDeleted?: () => void; // 👈 new callback
 }
 
-const EditFlashCard: React.FC<EditFlashCardProps> = ({ flashcard, onUpdated }) => {
+const EditFlashCard: React.FC<EditFlashCardProps> = ({ flashcard, onUpdated, onDeleted }) => {
   const [front, setFront] = useState(flashcard.front);
   const [back, setBack] = useState(flashcard.back);
   const [loading, setLoading] = useState(false);
@@ -26,15 +27,27 @@ const EditFlashCard: React.FC<EditFlashCardProps> = ({ flashcard, onUpdated }) =
       await updateFlashcard(flashcard.id, {
         front,
         back,
-        deck: flashcard.deck, // mantiene el deck
+        deck: flashcard.deck, // keep same deck
       });
-
-      console.log("✅ Flashcard updated");
 
       if (onUpdated) onUpdated();
     } catch (err) {
       console.error("❌ Error updating flashcard:", err);
       setError("Failed to update flashcard. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this flashcard?")) return;
+    try {
+      setLoading(true);
+      await deleteFlashcard(flashcard.id);
+      if (onDeleted) onDeleted();
+    } catch (err) {
+      console.error("❌ Error deleting flashcard:", err);
+      setError("Failed to delete flashcard. Try again.");
     } finally {
       setLoading(false);
     }
@@ -73,8 +86,21 @@ const EditFlashCard: React.FC<EditFlashCardProps> = ({ flashcard, onUpdated }) =
       {/* Error */}
       {error && <p className="text-red-400 text-sm">{error}</p>}
 
-      {/* Button */}
-      <div className="flex justify-end mt-6">
+      {/* Buttons */}
+      <div className="flex justify-between mt-6">
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={loading}
+          className="px-6 py-3 rounded-md font-semibold text-white 
+                     bg-gradient-to-b from-red-600 to-red-700 
+                     shadow-[0_0_20px_rgba(220,20,60,0.25)]
+                     hover:opacity-90 hover:scale-105 transition-transform 
+                     disabled:opacity-50"
+        >
+          {loading ? "Deleting..." : "Delete"}
+        </button>
+
         <button
           type="submit"
           disabled={loading}
