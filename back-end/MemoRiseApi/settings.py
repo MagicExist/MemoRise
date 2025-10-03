@@ -11,10 +11,14 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+#Configuring Media urls to store media files
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -58,6 +62,28 @@ CORS_ALLOW_ALL_ORIGINS = True #Just for develop
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    
+     "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+     "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),   # ⏰ expira en 60 min
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),      # 🔄 refresh dura 7 días
+    "ROTATE_REFRESH_TOKENS": True,                   # genera un nuevo refresh al refrescar
+    "BLACKLIST_AFTER_ROTATION": True,                 # invalida el viejo refresh si se rota
+    "AUTH_HEADER_TYPES": ("Bearer",),                 # autorización con "Bearer <token>"
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'MemoRise API',
+    'DESCRIPTION': 'API for MemoRise project',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
 ROOT_URLCONF = 'MemoRiseApi.urls'
@@ -131,3 +157,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = "core.User"
