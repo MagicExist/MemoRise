@@ -12,22 +12,22 @@ const DeckDetail = () => {
   const [visibleCount, setVisibleCount] = useState(12);
   const observerRef = useRef<HTMLDivElement | null>(null);
 
-  // modal states
+  // Modal states
   const [selectedFlashcard, setSelectedFlashcard] = useState<FlashcardType | null>(null);
   const [showEdit, setShowEdit] = useState(false);
 
-  // color y título desde DeckCard
+  // Deck color & title from DeckCard (via location.state)
   const location = useLocation();
   const state = location.state as { color?: string; title?: string };
 
-  // fetch flashcards
+  // ✅ Fetch all flashcards for this deck
   const fetchFlashcards = async () => {
     try {
       if (!deckId) return;
       const data = await getFlashcardsByDeck(Number(deckId));
       setFlashcards(data);
-    } catch (error) {
-      console.error("❌ Error fetching flashcards:", error);
+    } catch {
+      // you could add toast notification here instead of console
     } finally {
       setLoading(false);
     }
@@ -37,7 +37,7 @@ const DeckDetail = () => {
     fetchFlashcards();
   }, [deckId]);
 
-  // infinite scroll
+  // ✅ Infinite scroll observer
   useEffect(() => {
     if (!observerRef.current) return;
 
@@ -59,10 +59,12 @@ const DeckDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-black to-purple-700 text-white p-6">
+      {/* Deck title */}
       <h2 className="text-4xl font-bold mb-6">
         Flashcards {state?.title ? `of ${state.title}` : ""}
       </h2>
 
+      {/* Flashcards grid */}
       {loading ? (
         <p>Loading flashcards...</p>
       ) : flashcards.length === 0 ? (
@@ -84,7 +86,7 @@ const DeckDetail = () => {
             ))}
           </div>
 
-          {/* Sentinel */}
+          {/* Infinite scroll sentinel */}
           {visibleCount < flashcards.length && (
             <div ref={observerRef} className="h-10 flex justify-center items-center">
               <p className="text-gray-300">Loading more...</p>
@@ -93,7 +95,7 @@ const DeckDetail = () => {
         </>
       )}
 
-      {/* Edit modal */}
+      {/* Edit Flashcard Modal */}
       {showEdit && selectedFlashcard && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="relative flex justify-center bg-[#1E1E1E]/25 backdrop-blur-lg border border-white/10 p-7 rounded-xl shadow-xl w-220 h-125">
@@ -101,11 +103,11 @@ const DeckDetail = () => {
               flashcard={selectedFlashcard}
               onUpdated={() => {
                 setShowEdit(false);
-                fetchFlashcards();
+                fetchFlashcards(); // refresh list after update
               }}
               onDeleted={() => {
                 setShowEdit(false);
-                fetchFlashcards(); // ✅ refresh after deletion
+                fetchFlashcards(); // refresh list after deletion
               }}
             />
             <button

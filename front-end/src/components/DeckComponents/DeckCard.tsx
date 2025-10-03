@@ -8,8 +8,8 @@ interface DeckCardProps {
   onDelete?: (id: number) => void;
   onEdit?: () => void;
   showOptions?: boolean;
-  clickable?: boolean;          // 👈 default true
-  to?: string;                  // 👈 custom path opcional
+  clickable?: boolean; // 👈 default is true
+  to?: string; // 👈 optional custom navigation path
 }
 
 const DeckCard: React.FC<DeckCardProps> = ({
@@ -24,13 +24,15 @@ const DeckCard: React.FC<DeckCardProps> = ({
 }) => {
   const navigate = useNavigate();
 
+  // ✅ Handle card click (navigate to deck route)
   const handleCardClick = () => {
     if (!clickable) return;
     navigate(to ?? `/decks/${id}/study`, {
-      state: { color, title }, // 👈 pasamos props al detalle
+      state: { color, title }, // pass props to deck detail
     });
   };
 
+  // ✅ Allow keyboard navigation (Enter or Space)
   const handleKey = (e: React.KeyboardEvent) => {
     if (!clickable) return;
     if (e.key === "Enter" || e.key === " ") {
@@ -48,22 +50,22 @@ const DeckCard: React.FC<DeckCardProps> = ({
       className="relative group w-65 h-55 rounded-xl shadow-lg overflow-hidden transform transition-transform duration-200 hover:scale-105 cursor-pointer"
       aria-label={`Open deck ${title}`}
     >
-      {/* Fondo base */}
+      {/* Base background */}
       <div className="w-full h-full" style={{ backgroundColor: color }} />
 
-      {/* Gradiente de overlay */}
+      {/* Gradient overlay */}
       <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
 
-      {/* Título */}
+      {/* Deck title */}
       <div className="absolute bottom-3 left-3">
         <span className="text-white text-2xl font-semibold">{title}</span>
       </div>
 
-      {/* Options Menu (no dispara navegación) */}
+      {/* Options menu (stops navigation when clicked) */}
       {showOptions && (
         <div
           className="absolute top-3 right-3 hidden group-hover:block"
-          onClick={(e) => e.stopPropagation()} // 👈 evitar navegar al abrir menú
+          onClick={(e) => e.stopPropagation()} // prevent navigation
           onKeyDown={(e) => e.stopPropagation()}
         >
           <OptionsMenu

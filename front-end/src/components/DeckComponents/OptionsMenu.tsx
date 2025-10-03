@@ -14,7 +14,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete, onEdit }) =
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  // Close dropdown if clicked outside
+  // ✅ Close dropdown if user clicks outside
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -27,28 +27,23 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete, onEdit }) =
     };
   }, []);
 
+  // ✅ Delete deck and notify parent
   const handleDelete = async () => {
     try {
       await deleteDeck(deckId);
-      console.log("✅ Deck deleted successfully");
-
-      if (onDelete) {
-        onDelete(); // notify parent
-      }
-    } catch (error) {
-      console.error("Error deleting deck:", error);
+      if (onDelete) onDelete();
     } finally {
-      setOpen(false); // close the menu after action
+      setOpen(false);
     }
   };
 
+  // ✅ Edit deck and notify parent
   const handleEdit = () => {
-    if (onEdit) {
-      onEdit(); // notify parent
-    }
+    if (onEdit) onEdit();
     setOpen(false);
   };
 
+  // ✅ Navigate to deck details
   const handleDetails = () => {
     navigate(`/decks/${deckId}`);
     setOpen(false);
@@ -56,7 +51,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete, onEdit }) =
 
   return (
     <div className="relative" ref={menuRef}>
-      {/* 3 dots button */}
+      {/* Three dots button */}
       <button
         onClick={() => setOpen(!open)}
         className="p-1 rounded hover:bg-white/10"
@@ -64,7 +59,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({ deckId, onDelete, onEdit }) =
         <img src={ThreeDotsIcon} alt="options" className="w-6 h-6" />
       </button>
 
-      {/* Dropdown */}
+      {/* Dropdown menu */}
       {open && (
         <div className="absolute right-0 mt-2 w-36 bg-[#1F1F2E] rounded-md shadow-lg ring-1 ring-black/10 z-10">
           <ul className="py-1 text-sm text-gray-200">

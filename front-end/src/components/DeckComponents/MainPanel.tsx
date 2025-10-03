@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import DeckCard from "./DeckCard";
 import { getDecks } from "../../services/deckService";
 import type { Deck } from "../../types/deck";
@@ -7,7 +7,7 @@ import DeckForm from "./DeckForm";
 import DeckEdit from "./DeckEdit";
 import { FaTimes } from "react-icons/fa";
 import CreateFlashCard from "../FlashCardComponents/CreateFlashCard";
-import Navbar from "../Navbar/Navbar"; // 👈 importa tu navbar
+import Navbar from "../Navbar/Navbar";
 
 const MainPanel = () => {
   const [decks, setDecks] = useState<Deck[]>([]);
@@ -17,13 +17,14 @@ const MainPanel = () => {
   const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
   const [showFlashForm, setShowFlashForm] = useState(false);
 
+  // ✅ Fetch all decks on component mount
   useEffect(() => {
     const fetchDecks = async () => {
       try {
         const data = await getDecks();
         setDecks(data);
-      } catch (error) {
-        console.error("Error fetching decks:", error);
+      } catch {
+        // You could also display a toast here for errors
       } finally {
         setLoading(false);
       }
@@ -32,15 +33,18 @@ const MainPanel = () => {
     fetchDecks();
   }, []);
 
+  // ✅ Remove deck from UI after deletion
   const handleDeleteDeck = (deckId: number) => {
     setDecks((prev) => prev.filter((deck) => deck.id !== deckId));
   };
 
+  // ✅ Add new deck after creation
   const handleAddDeck = (newDeck: Deck) => {
     setDecks((prev) => [...prev, newDeck]);
     setShowForm(false);
   };
 
+  // ✅ Update deck after editing
   const handleUpdateDeck = (updatedDeck: Deck) => {
     setDecks((prev) =>
       prev.map((deck) => (deck.id === updatedDeck.id ? updatedDeck : deck))
@@ -50,9 +54,10 @@ const MainPanel = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-black to-purple-700 text-white">
-      {/* 👇 Navbar arriba */}
+      {/* Navbar always at the top */}
       <Navbar />
 
+      {/* Decks section */}
       <div className="p-6 flex flex-col items-center">
         <div className="w-full max-w-6xl">
           <h2 className="text-5xl font-bold text-gray-50 mb-6">Deck Panel</h2>
@@ -80,13 +85,13 @@ const MainPanel = () => {
         </div>
       </div>
 
-      {/* ActionBar */}
+      {/* Floating action bar */}
       <ActionBar
         onCreateDeck={() => setShowForm(true)}
         onCreateFlashcard={() => setShowFlashForm(true)}
       />
 
-      {/* CreateFlashCard modal */}
+      {/* Create Flashcard modal */}
       {showFlashForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
           <div className="relative flex justify-center bg-[#1E1E1E]/25 backdrop-blur-lg border border-white/10 p-7 rounded-xl shadow-xl w-220 h-125">
@@ -101,7 +106,7 @@ const MainPanel = () => {
         </div>
       )}
 
-      {/* Edit deck modal */}
+      {/* Edit Deck modal */}
       {showEdit && selectedDeck && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
           <div className="relative bg-[#1E1E1E]/25 backdrop-blur-lg border border-white/10 p-6 rounded-xl shadow-xl w-250 h-125">
@@ -116,7 +121,7 @@ const MainPanel = () => {
         </div>
       )}
 
-      {/* Create deck modal */}
+      {/* Create Deck modal */}
       {showForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
           <div className="relative bg-[#1E1E1E]/25 backdrop-blur-lg border border-white/10 p-6 rounded-xl shadow-xl w-250 h-125">
