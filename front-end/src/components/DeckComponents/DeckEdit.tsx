@@ -4,12 +4,12 @@ import { updateDeck } from "../../services/deckService";
 import DeckCard from "./DeckCard";
 
 interface DeckEditProps {
-  deck: Deck; // 👈 required
-  onUpdated: (updatedDeck: Deck) => void; // 👈 callback for parent
+  deck: Deck; // 👈 deck to edit
+  onUpdated: (updatedDeck: Deck) => void; // 👈 callback to notify parent after update
 }
 
-const colors = ["#3B82F6", "#F59E0B", "#10B981", "#8B5CF6", "#EF4444"] as const;
-
+// ✅ Available deck colors
+const colors = ["#3B82F6", "#F59E0B", "#10B981", "#8B5CF6", "#EF4444", "#F43F5E"] as const;
 type Color = typeof colors[number];
 
 const DeckEdit: React.FC<DeckEditProps> = ({ deck, onUpdated }) => {
@@ -18,6 +18,7 @@ const DeckEdit: React.FC<DeckEditProps> = ({ deck, onUpdated }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // ✅ Handle deck update
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -30,12 +31,12 @@ const DeckEdit: React.FC<DeckEditProps> = ({ deck, onUpdated }) => {
       setLoading(true);
       setError("");
 
+      // Call backend update service
       const updatedDeck = await updateDeck(deck.id, { title, color });
-      console.log("✅ Deck updated:", updatedDeck);
 
-      onUpdated(updatedDeck); // 👈 notify parent
-    } catch (err) {
-      console.error("❌ Error updating deck:", err);
+      // Notify parent
+      onUpdated(updatedDeck);
+    } catch {
       setError("Error updating deck. Please try again.");
     } finally {
       setLoading(false);
@@ -47,16 +48,23 @@ const DeckEdit: React.FC<DeckEditProps> = ({ deck, onUpdated }) => {
       onSubmit={handleSubmit}
       className="p-6 flex gap-10 w-full h-full items-center justify-center"
     >
-      {/* Left: Preview */}
+      {/* 👈 Left side: Preview */}
       <div className="flex-shrink-0 relative">
-        <h2 className="absolute -top-15 text-white text-3xl font-bold">Edit Deck</h2>        
-        <DeckCard id={deck.id} title={title} color={color} showOptions={false} clickable={false} />
+        <h2 className="absolute -top-15 text-white text-3xl font-bold">
+          Edit Deck
+        </h2>
+        <DeckCard
+          id={deck.id}
+          title={title}
+          color={color}
+          showOptions={false}
+          clickable={false}
+        />
       </div>
 
-      {/* Right: Edit Form */}
+      {/* 👉 Right side: Edit form */}
       <div className="flex flex-col gap-6 w-1/3">
-
-        {/* Title */}
+        {/* Title input */}
         <div>
           <label className="text-gray-200 text-sm">Title</label>
           <input
@@ -67,7 +75,7 @@ const DeckEdit: React.FC<DeckEditProps> = ({ deck, onUpdated }) => {
           />
         </div>
 
-        {/* Color Picker */}
+        {/* Color picker */}
         <div>
           <label className="text-gray-200 text-sm">Color</label>
           <div className="grid grid-cols-3 gap-3 mt-2 w-1/2">
@@ -85,10 +93,10 @@ const DeckEdit: React.FC<DeckEditProps> = ({ deck, onUpdated }) => {
           </div>
         </div>
 
-        {/* Error */}
+        {/* Error message */}
         {error && <p className="text-red-400 text-sm">{error}</p>}
 
-        {/* Update Button */}
+        {/* Update button */}
         <button
           type="submit"
           disabled={loading}

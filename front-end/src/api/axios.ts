@@ -24,23 +24,28 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // 🚫 If we are on login page, don't trigger logout on 401
+    if (window.location.pathname === "/") {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        const data = await refreshToken(); // pide nuevo access con el refresh
+        const data = await refreshToken(); // ask new access using refresh
         const newAccess = data.access;
 
-        // 🔥 guarda el nuevo access en el storage
+        // 🔥 Save new access token
         tokenStorage.setAccess(newAccess);
 
-        // Reintenta la request original con el nuevo token
+        // Retry original request with the new token
         originalRequest.headers.Authorization = `Bearer ${newAccess}`;
         return api(originalRequest);
       } catch (refreshError) {
-        // ❌ si falla el refresh -> logout
+        // ❌ If refresh fails -> logout and redirect
         logoutUser();
-        window.location.href = "/"; // redirige al login
+        window.location.href = "/login"; // redirect to login
       }
     }
 

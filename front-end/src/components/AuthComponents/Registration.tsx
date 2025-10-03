@@ -13,7 +13,7 @@ const Registration: React.FC = () => {
     password: "",
     confirm_password: "",
     username: "",
-    emailDomain: "@gmail.com",
+    emailDomain: "@gmail.com", // fixed domain suffix
   });
 
   const [errors, setErrors] = useState({
@@ -25,13 +25,14 @@ const Registration: React.FC = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // ✅ Handle input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Validaciones
+  // ✅ Form validation
   const validateForm = () => {
     let valid = true;
     const newErrors = {
@@ -41,53 +42,53 @@ const Registration: React.FC = () => {
       confirmPassword: "",
     };
 
-    // Usuario: 4–25 caracteres, letras, números, ".", "_" o "-"
+    // Username: 4–25 characters, letters, numbers, ".", "_" or "-"
     const usernameRegex = /^[a-zA-Z0-9._-]{4,25}$/;
     if (!usernameRegex.test(formData.username)) {
       newErrors.username =
-        "Debe tener entre 4 y 25 caracteres. Solo se permiten letras, números, '.', '_' o '-'.";
+        "Username must be 4–25 characters and can include letters, numbers, '.', '_' or '-'.";
       valid = false;
     }
 
-    // Parte usuario del correo
+    // Email username part
     const emailUserRegex = /^[a-z0-9]+(?:\.[a-z0-9]+)*$/;
     if (
       !emailUserRegex.test(formData.email) ||
       formData.email.length < 4 ||
       formData.email.length > 76
     ) {
-      newErrors.email = "Correo incorrecto.";
+      newErrors.email = "Invalid email username.";
       valid = false;
     }
 
-    // Correo completo
+    // Full email validation
     const fullEmail = `${formData.email}${formData.emailDomain}`;
     const fullEmailRegex = /^[a-z0-9]+(?:\.[a-z0-9]+)*@[a-z]+\.[a-z]{2,}$/;
     if (!fullEmailRegex.test(fullEmail)) {
-      newErrors.email = "Correo completo inválido.";
+      newErrors.email = "Invalid full email format.";
       valid = false;
     }
 
-    // Contraseña
+    // Password validation: 8+ chars, uppercase, lowercase, number, symbol
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{8,}$/;
 
     if (!passwordRegex.test(formData.password)) {
       newErrors.password =
-        "Mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo.";
+        "Password must have at least 8 characters, including uppercase, lowercase, number, and symbol.";
       valid = false;
     } else if (formData.password.length > 25) {
-      newErrors.password = "La contraseña no debe superar los 25 caracteres.";
+      newErrors.password = "Password cannot exceed 25 characters.";
       valid = false;
     }
 
-    // Confirmar contraseña
+    // Confirm password
     if (formData.password !== formData.confirm_password) {
-      newErrors.confirmPassword = "Las contraseñas no coinciden.";
+      newErrors.confirmPassword = "Passwords do not match.";
       valid = false;
     } else if (formData.confirm_password.length > 20) {
       newErrors.confirmPassword =
-        "La confirmación no debe superar los 20 caracteres.";
+        "Confirm password cannot exceed 20 characters.";
       valid = false;
     }
 
@@ -95,7 +96,7 @@ const Registration: React.FC = () => {
     return valid;
   };
 
-  // Envío del formulario
+  // ✅ Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -104,20 +105,17 @@ const Registration: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Build payload with our type
+      // Build payload
       const payload: UserRegistration = {
         username: formData.username,
-        email: `${formData.email}${formData.emailDomain}`, // join before sending
+        email: `${formData.email}${formData.emailDomain}`,
         password: formData.password,
         confirm_password: formData.confirm_password,
       };
 
-      console.log("📤 Enviando datos:", payload);
+      await registerUser(payload);
 
-      const response = await registerUser(payload);
-      console.log("✅ Usuario registrado:", response);
-
-      // Reset form
+      // Reset form after successful registration
       setFormData({
         email: "",
         username: "",
@@ -126,12 +124,16 @@ const Registration: React.FC = () => {
         confirm_password: "",
       });
 
+      // Redirect to login page
       navigate("/");
-
     } catch (error: any) {
-      console.error("❌ Error en registro:", error);
+      // Handle backend validation errors
       if (error.response?.data) {
-        console.error("Detalles del error:", error.response.data);
+        setErrors((prev) => ({
+          ...prev,
+          email: error.response.data.email || prev.email,
+          username: error.response.data.username || prev.username,
+        }));
       }
     } finally {
       setIsSubmitting(false);
@@ -140,32 +142,37 @@ const Registration: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-zinc-900 relative">
+      {/* Background image */}
       <div
         style={{ backgroundImage: `url(${backgroundImage})` }}
         className="absolute bottom-0 left-0 w-2/3 h-4/5 bg-contain bg-left-bottom opacity-30 bg-no-repeat"
       />
+
+      {/* Registration form */}
       <form
         onSubmit={handleSubmit}
         className="bg-zinc-800 shadow-lg rounded-2xl p-8 w-full max-w-md border border-zinc-700 z-10"
       >
-        {/* Títulos */}
+        {/* Title section */}
         <div className="mb-6">
           <h1 className="text-5xl font-bold text-white mb-1">MemoRise</h1>
           <h2 className="text-sm font-bold text-zinc-200">
-            Por favor, ingrese sus datos.
+            Please fill in your details to create an account.
           </h2>
         </div>
 
-        {/* Usuario */}
+        {/* Username */}
         <div className="mb-4">
-          <label className="block text-sm font-bold text-zinc-200">Usuario</label>
+          <label className="block text-sm font-bold text-zinc-200">
+            Username
+          </label>
           <input
             type="text"
             name="username"
             value={formData.username}
             onChange={handleChange}
-            placeholder="Tu nombre de usuario"
-            maxLength={25} // 👈 máximo de caracteres
+            placeholder="Your username"
+            maxLength={25}
             className="w-full mt-1 px-3 py-2 border border-zinc-700 rounded-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
           />
           {errors.username && (
@@ -173,37 +180,36 @@ const Registration: React.FC = () => {
           )}
         </div>
 
-        {/* Correo */}
-<div className="mb-4">
-  <label className="block text-sm font-bold text-zinc-200">
-    Correo electrónico
-  </label>
-  <div className="flex mt-1 items-center">
-    {/* Parte del usuario */}
-    <input
-      type="text"
-      name="email"
-      value={formData.email}
-      onChange={handleChange}
-      placeholder="usuario123"
-      maxLength={76} // 👈 máximo para emailUser
-      className="flex-1 px-3 py-2 border border-zinc-00 rounded-l-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
-    />
-    {/* Dominio fijo */}
-    <span className="px-3 py-2 border border-l-0 border-zinc-500 rounded-r-lg bg-gray-100 text-zinc-800">
-      @gmail.com
-    </span>
-  </div>
-  {errors.email && (
-    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-  )}
-</div>
-
-
-        {/* Contraseña */}
+        {/* Email */}
         <div className="mb-4">
           <label className="block text-sm font-bold text-zinc-200">
-            Contraseña
+            Email
+          </label>
+          <div className="flex mt-1 items-center">
+            {/* Username part of email */}
+            <input
+              type="text"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="username123"
+              maxLength={76}
+              className="flex-1 px-3 py-2 border border-zinc-700 rounded-l-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
+            />
+            {/* Fixed domain */}
+            <span className="px-3 py-2 border border-l-0 border-zinc-500 rounded-r-lg bg-gray-100 text-zinc-800">
+              @gmail.com
+            </span>
+          </div>
+          {errors.email && (
+            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+          )}
+        </div>
+
+        {/* Password */}
+        <div className="mb-4">
+          <label className="block text-sm font-bold text-zinc-200">
+            Password
           </label>
           <input
             type="password"
@@ -211,7 +217,7 @@ const Registration: React.FC = () => {
             value={formData.password}
             onChange={handleChange}
             placeholder="••••••••"
-            maxLength={20} // 👈 máximo de 20 caracteres
+            maxLength={20}
             className="w-full mt-1 px-3 py-2 border border-zinc-700 rounded-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
           />
           {errors.password && (
@@ -219,10 +225,10 @@ const Registration: React.FC = () => {
           )}
         </div>
 
-        {/* Confirmar contraseña */}
+        {/* Confirm Password */}
         <div className="mb-10">
           <label className="block text-sm font-bold text-zinc-200">
-            Confirmar contraseña
+            Confirm Password
           </label>
           <input
             type="password"
@@ -230,15 +236,17 @@ const Registration: React.FC = () => {
             value={formData.confirm_password}
             onChange={handleChange}
             placeholder="••••••••"
-            maxLength={20} // 👈 máximo de 20 caracteres
+            maxLength={20}
             className="w-full mt-1 px-3 py-2 border border-zinc-700 rounded-lg bg-white text-zinc-900 focus:outline-none focus:ring focus:ring-violet-500"
           />
           {errors.confirmPassword && (
-            <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {errors.confirmPassword}
+            </p>
           )}
         </div>
 
-        {/* Botón */}
+        {/* Submit button */}
         <button
           type="submit"
           disabled={isSubmitting}
@@ -248,17 +256,19 @@ const Registration: React.FC = () => {
               : "bg-violet-600 hover:bg-violet-700"
           }`}
         >
-          {isSubmitting ? "Registrando..." : "Registrarse"}
+          {isSubmitting ? "Registering..." : "Sign Up"}
         </button>
 
-        {/* Enlace para volver al login */}
+        {/* Link to login */}
         <div className="mt-6 text-center">
-          <span className="text-sm text-zinc-200">¿Ya tienes una cuenta? </span>
+          <span className="text-sm text-zinc-200">
+            Already have an account?{" "}
+          </span>
           <Link
             to="/"
             className="text-sm font-bold text-violet-500 hover:underline"
           >
-            Inicia sesión
+            Sign In
           </Link>
         </div>
       </form>

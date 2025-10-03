@@ -1,22 +1,25 @@
 import React, { useState } from "react";
-import { createDeck } from "../../services/deckService"; 
+import { createDeck } from "../../services/deckService";
 import type { Deck } from "../../types/deck";
-import DeckCard from "./DeckCard"; // 👈 make sure this path is correct
+import DeckCard from "./DeckCard";
 
 interface DeckFormProps {
   onCreated?: (deck: Deck) => void;
 }
 
-const colors = ["#3B82F6", "#F59E0B", "#10B981", "#8B5CF6", "#EF4444","#F43F5E"];
+// ✅ Predefined colors for deck selection
+const colors = ["#3B82F6", "#F59E0B", "#10B981", "#8B5CF6", "#EF4444", "#F43F5E"];
 
 const DeckForm: React.FC<DeckFormProps> = ({ onCreated }) => {
-  const [title, setTitle] = useState("Title"); 
+  const [title, setTitle] = useState("Title");
   const [color, setColor] = useState(colors[0]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // ✅ Handle deck creation
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!title.trim()) {
       setError("⚠️ Title is required");
       return;
@@ -26,18 +29,16 @@ const DeckForm: React.FC<DeckFormProps> = ({ onCreated }) => {
       setLoading(true);
       setError("");
 
+      // Call backend service
       const newDeck = await createDeck({ title, color });
-      console.log("✅ Deck created:", newDeck);
 
-      if (onCreated) {
-        onCreated(newDeck);
-      }
+      // Notify parent component
+      if (onCreated) onCreated(newDeck);
 
-      // reset form
+      // Reset form
       setTitle("Title");
       setColor(colors[0]);
-    } catch (err) {
-      console.error("❌ Error creating deck:", err);
+    } catch {
       setError("Error creating deck. Please try again.");
     } finally {
       setLoading(false);
@@ -49,21 +50,23 @@ const DeckForm: React.FC<DeckFormProps> = ({ onCreated }) => {
       onSubmit={handleSubmit}
       className="p-6 flex gap-10 w-full h-full items-center justify-center"
     >
-
-    
-
-      {/* 👈 Deck Preview (left) */}
-
+      {/* 👈 Deck Preview (left side) */}
       <div className="flex-shrink-0 relative">
-        <h2 className="absolute -top-15 text-white text-3xl font-bold">New Deck</h2>        
-        <DeckCard id={0} title={title} color={color} showOptions={false} clickable={false} />
+        <h2 className="absolute -top-15 text-white text-3xl font-bold">
+          New Deck
+        </h2>
+        <DeckCard
+          id={0}
+          title={title}
+          color={color}
+          showOptions={false}
+          clickable={false}
+        />
       </div>
 
-      {/* 👉 Form Fields (right) */}
+      {/* 👉 Form Fields (right side) */}
       <div className="flex flex-col gap-6 w-1/3">
-        
-
-        {/* Title */}
+        {/* Title input */}
         <div>
           <label className="text-gray-200 text-sm">Title</label>
           <input
@@ -75,7 +78,7 @@ const DeckForm: React.FC<DeckFormProps> = ({ onCreated }) => {
           />
         </div>
 
-        {/* Color Picker */}
+        {/* Color picker */}
         <div>
           <label className="text-gray-200 text-sm">Color</label>
           <div className="grid grid-cols-3 gap-3 mt-2 w-1/2">
@@ -93,10 +96,10 @@ const DeckForm: React.FC<DeckFormProps> = ({ onCreated }) => {
           </div>
         </div>
 
-        {/* Error */}
+        {/* Error message */}
         {error && <p className="text-red-400 text-sm">{error}</p>}
 
-        {/* Create Button */}
+        {/* Create button */}
         <button
           type="submit"
           disabled={loading}

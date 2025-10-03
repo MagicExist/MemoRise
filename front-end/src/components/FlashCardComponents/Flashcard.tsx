@@ -3,11 +3,11 @@ import type { Flashcard as FlashcardType } from "../../types/flashcard";
 
 interface FlashcardProps {
   card: FlashcardType;
-  index?: number; // 👈 index for color cycling
+  index?: number; // index used to assign a color
 }
 
 const Flashcard: React.FC<FlashcardProps> = ({ card, index = 0 }) => {
-  // 🎨 5 color options
+  // Available front colors
   const frontColors = [
     "#3B82F6", // blue
     "#F59E0B", // amber
@@ -22,12 +22,12 @@ const Flashcard: React.FC<FlashcardProps> = ({ card, index = 0 }) => {
     <div className="group relative w-full h-48 [perspective:1000px]">
       <div className="absolute inset-0 transition-transform duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] cursor-pointer">
         
-        {/* Front */}
+        {/* Front side */}
         <div
           className="absolute inset-0 flex items-center justify-center rounded-2xl shadow-xl overflow-hidden [backface-visibility:hidden]"
           style={{ backgroundColor: frontColor }}
         >
-          {/* Gradient overlay */}
+          {/* Overlay gradient */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent rounded-2xl" />
           
           <p className="relative text-xl font-bold text-white text-center px-2">
@@ -35,7 +35,7 @@ const Flashcard: React.FC<FlashcardProps> = ({ card, index = 0 }) => {
           </p>
         </div>
 
-        {/* Back with vertical gradient */}
+        {/* Back side */}
         <div
           className="absolute inset-0 flex items-center justify-center rounded-2xl shadow-xl 
                      [transform:rotateY(180deg)] [backface-visibility:hidden] overflow-hidden"
