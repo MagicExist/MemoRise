@@ -103,6 +103,10 @@ const DeckDetail = () => {
                 setShowEdit(false);
                 fetchFlashcards();
               }}
+              onDeleted={() => {
+                setShowEdit(false);
+                fetchFlashcards(); // ✅ refresh after deletion
+              }}
             />
             <button
               onClick={() => setShowEdit(false)}

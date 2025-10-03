@@ -34,3 +34,7 @@ export const getStudyCards = async (deckId?: string): Promise<Flashcard[]> => {
   const response = await api.get<Flashcard[]>(url);
   return response.data;
 };
+
+export const deleteFlashcard = async (id: number): Promise<void> => {
+  await api.delete(`/flashcards/${id}/`);
+};
