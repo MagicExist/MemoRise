@@ -24,6 +24,9 @@ static/
 .env.local
 .env.production
 .env.test
+.env
+*.env
+back-end/.env
 
 # IDEs / Editors
 .vscode/
