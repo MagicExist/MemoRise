@@ -1,6 +1,8 @@
 from rest_framework import viewsets,status
+from rest_framework.views import APIView
 from .models import User,Deck,Flashcard
 from .serializer import PublicUserSerializer,CustomTokenObtainPairSerializer,DeckSerializer,FlashCardSerializer,FlashcardReviewSerializer
+from .services.ai_service import generate_flashcards
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -11,6 +13,26 @@ from django.utils import timezone
 from decimal import Decimal
 from datetime import timedelta
 from django.db.models import Q
+
+import json
+
+
+class AIAgentFlashcardsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user_text = request.data.get("text", "")
+        if not user_text:
+            return Response({"error": "No text provided"}, status=400)
+
+        flashcards_raw = generate_flashcards(user_text)
+
+        try:
+            flashcards = json.loads(flashcards_raw)  # Parseamos JSON
+        except:
+            flashcards = {"error": "Invalid AI response", "raw": flashcards_raw}
+
+        return Response({"flashcards": flashcards})
 
 
 # User View Set (Here we will define the api endpoints for our user custom model)

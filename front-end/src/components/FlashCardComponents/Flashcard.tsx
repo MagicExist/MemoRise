@@ -1,8 +1,7 @@
 import React from "react";
-import type { Flashcard as FlashcardType } from "../../types/flashcard";
 
 interface FlashcardProps {
-  card: FlashcardType;
+  card: { front: string; back: string };
   index?: number; // index used to assign a color
 }
 
