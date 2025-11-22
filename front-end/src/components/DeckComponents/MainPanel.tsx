@@ -8,12 +8,14 @@ import DeckEdit from "./DeckEdit";
 import { FaTimes } from "react-icons/fa";
 import CreateFlashCard from "../FlashCardComponents/CreateFlashCard";
 import Navbar from "../Navbar/Navbar";
+import FlashcardAI from "../FlashCardComponents/FlashcardAI";
 
 const MainPanel = () => {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [showAIAgent, setShowAIAgent] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
   const [showFlashForm, setShowFlashForm] = useState(false);
 
@@ -89,7 +91,22 @@ const MainPanel = () => {
       <ActionBar
         onCreateDeck={() => setShowForm(true)}
         onCreateFlashcard={() => setShowFlashForm(true)}
+        onAIAgent={() => setShowAIAgent(true)}
       />
+
+      {showAIAgent && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
+          <div className="relative bg-[#1E1E1E]/25 backdrop-blur-lg border border-white/10 p-7 rounded-xl shadow-xl w-220 h-125">
+            <FlashcardAI/>
+            <button
+              onClick={() => setShowAIAgent(false)}
+              className="absolute top-3 right-3 p-2 rounded-full text-gray-300 hover:text-purple-500 hover:bg-purple-500/20 cursor-pointer transition transform hover:scale-110"
+            >
+              <FaTimes size={18} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Create Flashcard modal */}
       {showFlashForm && (
