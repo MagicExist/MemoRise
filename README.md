@@ -2,6 +2,14 @@
 
 A smart flashcard application that helps you learn, practice, and reinforce knowledge using AI-powered content generation and spaced repetition algorithms.
 
+## 🚀 Live Demo
+
+- **Frontend:** https://memorise.up.railway.app  
+- **Backend API:** https://memorise-backend.up.railway.app  
+- **API Docs (Swagger):** https://memorise-backend.up.railway.app/api/schema/swagger-ui/
+
+---
+
 ## Table of Contents
 
 - [Features](#features)
