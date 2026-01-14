@@ -3,7 +3,7 @@ import { tokenStorage } from "../services/tokenStorage";
 import { refreshToken, logoutUser } from "../services/authService";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 // ✅ Request interceptor -> always add access token
