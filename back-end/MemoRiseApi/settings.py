@@ -34,7 +34,7 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = [
-    "memorise-backend.up.railway.app"
+    ".railway.app"
 ]
 
 
@@ -64,14 +64,17 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = [
-    "memorise-backend.up.railway.app"
+CORS_ALLOW_ALL_ORIGINS = False
+
+CORS_ALLOWED_ORIGINS = [
+    "https://memorise.up.railway.app",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "https://memorise.up.railway.app",
+    "https://memorise-backend.up.railway.app",
 ]
 
 REST_FRAMEWORK = {
