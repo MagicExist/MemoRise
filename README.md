@@ -8,6 +8,8 @@ A smart flashcard application that helps you learn, practice, and reinforce know
 - **Backend API:** https://memorise-backend.up.railway.app  
 - **API Docs (Swagger):** https://memorise-backend.up.railway.app/api/schema/swagger-ui/
 
+⚠️ Note: The AI-powered flashcard generation feature is not available on the live demo due to security reasons. Exposing the OpenAI API key publicly could lead to unauthorized usage and exhaust all credits. The feature works locally when you provide your own API key in the .env file.
+
 ---
 
 ## Table of Contents
