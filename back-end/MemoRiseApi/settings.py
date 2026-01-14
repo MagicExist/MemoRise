@@ -18,7 +18,7 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-OPENAI_API_KEY = config("OPENAI_API_KEY")
+OPENAI_API_KEY = OPENAI_API_KEY = config("OPENAI_API_KEY", default="")
 
 #Configuring Media urls to store media files
 MEDIA_URL = "/media/"
@@ -28,12 +28,14 @@ MEDIA_ROOT = BASE_DIR / "media"
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-gk$ky45_dl9+09a^+i!yufsh$ti=+%)!@_zc)e1@yg2p@+4!!t'
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    ".railway.app"
+]
 
 
 # Application definition
@@ -62,7 +64,18 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True #Just for develop
+CORS_ALLOW_ALL_ORIGINS = False
+
+CORS_ALLOWED_ORIGINS = [
+    "https://memorise.up.railway.app",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://memorise.up.railway.app",
+    "https://memorise-backend.up.railway.app",
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
@@ -156,6 +169,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
