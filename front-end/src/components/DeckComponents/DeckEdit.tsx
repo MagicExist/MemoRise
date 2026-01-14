@@ -9,7 +9,7 @@ interface DeckEditProps {
 }
 
 // ✅ Available deck colors
-const colors = ["#3B82F6", "#F59E0B", "#10B981", "#8B5CF6", "#EF4444", "#F43F5E"] as const;
+const colors = ["#3B82F6", "#F59E0B", "#10B981", "#9333EA", "#EF4444", "#F43F5E"] as const;
 type Color = typeof colors[number];
 
 const DeckEdit: React.FC<DeckEditProps> = ({ deck, onUpdated }) => {
